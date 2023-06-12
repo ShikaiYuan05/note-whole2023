@@ -128,6 +128,7 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 ![images](./images/img151.png)
 
 <br/>
+
 - 情况1：缓存不一致问题
 	- 先修改MySQL中的数据
 	- 修改完成后把Redis缓存中的数据删除
