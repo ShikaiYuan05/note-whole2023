@@ -61,10 +61,14 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 微服务是马丁·福勒和詹姆斯·路易斯提出的架构风格理念。马丁福勒博客对微服务的官方定义是：
 > In short, the microservice architectural style [1] is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These services are built around business capabilities and independently deployable by fully automated deployment machinery. There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies.
 
+<br/>
+
+原文网址：[Microservices Guide (martinfowler.com)](https://www.martinfowler.com/microservices/)<br/>
+
 根据上面的描述，我们可以总结出微服务的如下几个关键特定：
 - a suite of small services：一组小型服务
 - **in its own process：在自己独立的进程中运行**
-- communicating with lightweight mechanisms：以轻量级方式交互（通常是HTTP资源）
+- communicating with lightweight mechanisms：以轻量级方式交互（通常是**HTTP**资源API）
 - built around business capabilities：围绕业务能力构建
 - **independently deployable：可以独立部署**
 - **fully automated deployment machinery：应用的部署是完全自动化的**
@@ -86,7 +90,7 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 
 ## 2、分布式的好处
 ### ①集群：局部横向扩容
-#### [1]辨析概念
+#### [1]分布式和集群概念辨析
 - 相同点：都涉及到使用多个服务器实例
 - 不同点：
 	- 集群是同构的：在一个集群里每一个服务器实例运行的是项目中相同的模块
@@ -105,17 +109,9 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 单一节点存在单点故障的风险。所以通过配置集群、主从、主备、主主等形式，让服务器在运行过程中有多个实例对外提供服务，一方面是提升并发能力，另外避免单点故障提高系统的可用性——即使某一个实例不可用，但整个系统对外仍然是可用的。
 
 ## 3、分布式带来的问题
-### ①会话控制不一致
+### ①会话信息不一致
 ![images](./images/img148.png)
-解决的思路：
-- 解决Session不一致问题，例如：把Session对象抽出来放在专门的Session库中，保证Session对象只有一份（例如使用Redis作为Session库，使用SpringSession框架来接管Java代码中的Session对象）
-- 单点登录：在登录功能中，保证用户在一个节点执行登录操作之后，再访问其它节点仍然是已登录状态。
-	- 项目中专门有一个模块负责执行认证操作
-	- 认证成功后，给用户颁发一个token（令牌）
-	- 这个token不仅发给用户，也同时在Redis中保存一份
-	- 以后用户访问系统时，都携带这个token
-	- 系统接收到用户请求，通过类似拦截器、过滤器这样的机制进行检查
-	- token有效则放行，token无效则拒绝
+
 
 ### ②数据不一致
 #### [1]多个关系型数据库
@@ -129,9 +125,7 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 
 <br/>
 
-- 情况1：缓存不一致问题
-	- 先修改MySQL中的数据
-	- 修改完成后把Redis缓存中的数据删除
+- 情况1：缓存不一致问题（通过延时双删策略解决，但这是最终一致性并非强一致性）
 - 情况2：不是缓存，就是同一个逻辑内，不同操作
 	- 可以采用TCC方式解决：Try、Cancel、Confirm
 		- Try：各个模块尝试执行操作
@@ -152,6 +146,10 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 
 ![images](./images/img152.png)
 
+### ④小结
+所有上面提到的问题都是应对新挑战所不可避免的，不是我们没事找事。
+
+
 # 二、SpringCloud介绍
 ## 1、她是一组框架
 SpringCloud不是单独的一个框架，而是一组框架的总和，她是分布式、微服务环境下开发的一个综合解决方案。
@@ -168,6 +166,24 @@ SpringCloud不是单独的一个框架，而是一组框架的总和，她是分
 SpringCloud所整合的很多具体框架，有它们自己各自的版本，这些版本是使用传统的数字方式来记录的。比如SpringBoot的版本：2.3.6.RELEASE。<br/>
 而SpringCloud的版本和具体某个框架的版本并没有直接关系，所以如果使用同样的版本格式，会让人产生不必要的联想。<br/>
 所以SpringCloud使用伦敦地铁站的名字来作为版本号，按照首字母排序。A开头的是第一个大版本，B开头的是第二个大版本……
+
+<br/>
+
+|英文|中文|终结版本|要求的SpringBoot版本|SpringBoot代表版本|
+|--|--|--|--|--|
+|Angel|安吉尔|SR6|1.2.X|1.2.8|
+|Brixton|布里克斯顿|SR7|1.3.X|1.3.8|
+|Camden|卡梅登|SR7|1.4.X|1.4.2|
+|Dalston|达斯顿|SR5|1.5.X|\*|
+|Edgware|艾奇韦尔|SR5|1.5.X|1.5.19|
+|Finchley|芬奇利|SR2|2.0.X|2.0.8|
+|Greenwich|格林威治|SR6|2.1.X|2.1.2|
+|Hoxton|霍克斯顿|SR12|2.2.X|2.2.6|
+|2020aka Ilford|埃福的|GA|2.5.X|2.5.7|
+|2021aka Jubilee|朱比利|GA|2.6.X|2.6.1|
+|2022 aka Kilburn|基尔伯恩|GA|3.0.X|Spring Framework 6.X<br/>SpringBoot 3.X，<br/>要求JDK17，兼容 Jakarta EE|
+
+<br/>
 
 ## 2、各组件扮演的角色
 - 初始状态：微服务A通过RestTemplate调用微服务B
