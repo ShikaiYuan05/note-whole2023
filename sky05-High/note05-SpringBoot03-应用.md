@@ -56,11 +56,13 @@ apple、banana、orange、grape、pear
 <html lang="en" xmlns:th="http://www.thymeleaf.org">  
 <head>  
     <meta charset="UTF-8">  
-    <title>Title</title>  
+    <title>首页</title>  
 </head>  
 <body>  
   
-    <h1>首页</h1>  
+    <h3>首页</h3>  
+  
+    <p th:text="${attrName}"></p>  
   
 </body>  
 </html>
@@ -79,9 +81,12 @@ apple、banana、orange、grape、pear
 @Controller  
 public class MVCController {  
   
-    @RequestMapping("/index.html")  
-    public String toIndexPage() {  
-        System.out.println("hello");  
+    @GetMapping("/index.html")  
+    public String toIndexPage(Model model) {  
+  
+        // 我们把数据存入模型，SpringMVC 会把模型中的数据存入请求域  
+        model.addAttribute("attrName", "attrValue");  
+  
         return "portal";  
     }  
   
@@ -111,7 +116,7 @@ public class MVCController {
 
 ### ③引用静态资源
 ```html
-<img th:src="@{mi.jpg}">
+<img th:src="@{/mi.jpg}">
 ```
 
 ## 4、拦截器
@@ -140,7 +145,11 @@ public class MyConfig implements WebMvcConfigurer {
   
     @Override  
     public void addInterceptors(InterceptorRegistry registry) {  
-        registry.addInterceptor(myInterceptor);  
+		// ant 风格地址匹配模式：/*表示匹配请求路径中的一级  
+		// ant 风格地址匹配模式：/**表示匹配请求路径中的多级  
+		// /apple/aaa  
+		// /apple/aaa/bbb  
+		registry.addInterceptor(myInterceptors).addPathPatterns("/apple/**");
     }  
 }
 ```
@@ -267,24 +276,28 @@ public interface EmpMapper {
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
 <mapper namespace="com.atguigu.boot.mapper.EmpMapper">  
-  
-    <select id="selectAll" resultType="com.atguigu.boot.entity.Emp">  
-        select emp_id empId,emp_name empName,emp_salary empSalary from t_emp    </select>  
-  
+    <select id="selectAll" resultType="Emp">  
+        select emp_id, emp_name, emp_salary from t_emp    
+    </select>  
 </mapper>
 ```
 
 ## 4、YAML配置
+从下面配置的例子可以看出：原来在Mybatis全局配置文件中做的配置，可以在SpringBoot配置文件中配置。具体配置项的结构一方面参考org.mybatis.spring.boot.autoconfigure.MybatisProperties类，另外借助IDEA提示。<br/>
+
 ```yaml
 spring:  
   datasource:  
+    url: jdbc:mysql://localhost:3306/db_hr?serverTimezone=Asia/Shanghai  
     username: root  
     password: atguigu  
-    url: jdbc:mysql://localhost:3306/db_hr?serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver  
     type: com.alibaba.druid.pool.DruidDataSource  
 mybatis:  
-  mapper-locations: classpath:/mapper/*.xml
+  mapper-locations: classpath:/mapper/*Mapper.xml  
+  configuration:  
+    map-underscore-to-camel-case: true  
+  type-aliases-package: com.atguigu.boot.entity  
 logging:  
   level:  
     com.atguigu.boot.mapper: debug
@@ -339,10 +352,41 @@ public class MybatisMainType {
 
 # 四、SpringBoot整合Spring Data JPA
 ## 1、JPA简介
+JPA也是Java官方设计的一套标准，也是由一系列接口组成的。<br/>
+作用是规定ORM操作的标准。<br/>
+ORM：Object Relationship Mapping对象关系映射。
+- 对象：Java实体类
+- 关系：关系型数据库
+
+<br/>
+
+ORM基本的映射关系是：
+- Java类对应数据库中的表
+- Java类的对象对应表中的行（记录）
+- Java类的属性对应表中的列（字段）
+
+<br/>
+
+复杂的ORM映射包括：
+- 一对一关系（单向、双向）
+- 一对多关系（单向、双向）
+- 多对多关系（单向、双向）
+- 聚合
+- 继承
+- ……
+
+<br/>
+
+Hibernate完整实现了JPA这套标准。Spring Data也提供了JPA的实现。而Spring Data本身并不是操作数据库的，而仅仅是Spring提供的一套操作数据的解决方案。所以Spring Data和JPA整合之后，只需要写接口就能完成常规CRUD操作。
+
+<br/>
+
+虽然访问关系型数据库用到Spring Data + JPA不多，但是后面访问ElasticSearch、Redis，用的就是Spring Data框架。
 
 ## 2、引入依赖
 ```xml
-<dependencies>  
+<dependencies>
+	<!-- Spring Data 和 JPA 整合时使用的场景启动器 -->
     <dependency>  
         <groupId>org.springframework.boot</groupId>  
         <artifactId>spring-boot-starter-data-jpa</artifactId>  
@@ -384,6 +428,10 @@ public class Emp implements Serializable {
 
 ## 4、创建Dao接口
 ```java
+// 具体模块 DAO 不需要写实现类，声明接口即可  
+// 接口要求继承 JpaRepository// 接口需要传入两个泛型参数：  
+// 泛型参数一：实体类类型（加了@Entity注解的类）  
+// 泛型参数二：实体类中主键字段的类型
 public interface EmpDao extends JpaRepository<Emp, Integer> {  
 }
 ```
@@ -410,7 +458,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver  
     type: com.alibaba.druid.pool.DruidDataSource  
   jpa:  
-    database: mysql  
+    database: mysql # 指定数据库的类型
     show-sql: true  
     generate-ddl: true  
     hibernate:  
@@ -444,7 +492,16 @@ public class JPATest {
         for (Emp emp : empList) {  
             System.out.println("emp = " + emp);  
         }  
-    }  
+    }
+      
+	@Test  
+	public void testFindById() {  
+	    Optional<Emp> optional = empDao.findById(2);  
+	  
+	    Emp emp = optional.orElse(new Emp(3, "no data", 0.0));  
+	  
+	    System.out.println("emp = " + emp);  
+	}
   
 }
 ```
@@ -459,7 +516,8 @@ public class JPATest {
         <artifactId>spring-boot-starter-data-redis</artifactId>  
     </dependency>  
   
-    <!-- Spring2.X 集成 Redis 所需 commons-pool2 -->    <dependency>  
+    <!-- Spring2.X 集成 Redis 所需 commons-pool2 -->    
+    <dependency>  
         <groupId>org.apache.commons</groupId>  
         <artifactId>commons-pool2</artifactId>  
         <version>2.6.0</version>  
