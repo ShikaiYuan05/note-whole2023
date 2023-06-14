@@ -17,13 +17,24 @@
 - 属性文件扩展名：properties
 
 ### ④激活方式
+#### [1]YAML格式
 ```yaml
 spring:  
   profiles:  
     active: pro
 ```
 
+#### [2]properties格式
+```properties
+spring.profiles.active=foo
+```
+
 # 二、文件格式
+> 如果两种配置文件都存在并且都是设置了相同的配置项，那么以properties文件中的配置为准。<br/>
+> 但是不要这么干，太不规范了。
+
+<br/>
+
 ## 1、属性文件
 ### ①举例
 ```properties
@@ -37,8 +48,19 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 - 每行一个键值对
 - 键和值之间使用等号
 - 键使用点来表示层级
+- 用反斜杠表示当前行尚未结束，转到下一行继续
+```properties
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\  
+org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\  
+org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\  
+org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\  
+org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
+……
+```
 
 ## 2、YAML文件
+> Yet Another Markup Language的缩写
+
 ### ①举例
 ```yaml
 server:
@@ -132,6 +154,7 @@ gmall:
 # 三、从配置文件读取数据
 ## 1、使用@Value注解
 ### ①配置
+不管是YAML格式还是properties格式都可以：
 ```yaml
 atguigu:  
   config:  
@@ -249,3 +272,11 @@ public class MyController {
   
 }
 ```
+
+## 3、使用场景
+- @Value注解读取**单条配置**信息：
+	- 这个配置信息是动态变化的，不适合在Java代码中写死。
+	- 在配置文件中灵活修改更合适。
+- @ConfigurationProperties功能在我们开发业务功能时很少会用到
+	- 这里我们介绍这个注解，主要还是帮助我们理解SpringBoot底层原理
+	- 如果要使用，更适合于**读取较多的配置信息**

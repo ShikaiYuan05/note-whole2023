@@ -4,6 +4,10 @@
 - @ResponseBody
 - @RequestBody
 
+<br/>
+
+> 单独使用SpringMVC时还需要导入Jackson这样专门处理JSON操作的jar包，但是使用SpringBoot的Web场景启动器就不需要了。
+
 ## 2、服务器端渲染页面
 ### ①引入依赖
 ```xml
@@ -20,6 +24,21 @@
 ```
 
 ### ②视图前缀与后缀
+> 物理视图：请求转发能够达到的完整路径
+/WEB-INF/view/apple.html<br/>
+/WEB-INF/view/banana.html<br/>
+/WEB-INF/view/orange.html<br/>
+/WEB-INF/view/grape.html<br/>
+/WEB-INF/view/pear.html<br/>
+> <br/>
+前面都是一样的：/WEB-INF/view/（视图前缀）<br/>
+后面也是一样的：.html（视图后缀）<br/>
+> <br/>
+所以每个处理请求的Controller方法指定中间各自不同的部分即可（逻辑视图）。<br/>
+apple、banana、orange、grape、pear
+
+<br/>
+
 通过查看org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties这个类我们能看到默认设置：<br/>
 
 ![img.png](images/img226.png)
@@ -50,6 +69,10 @@
 <br/>
 
 > 如果修改视图前后缀，那么就配置项就参考ThymeleafProperties这个类。但是相信我，你肯定不会修改的。
+> <br/>
+> 顺带一提：平常我们说的类路径，归根到底它到底指的是哪个目录？<br/>
+> 项目部署之后：/WEB-INF/classes目录。<br/>
+> 因为不管是src/main/java还是src/main/resources在项目部署之后，资源都放在了/WEB-INF/classes目录下。
 
 ### ③Controller方法
 ```java

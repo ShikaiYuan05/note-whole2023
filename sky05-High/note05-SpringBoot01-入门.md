@@ -141,5 +141,34 @@ public class HelloWorldMainType {
 
 
 ### ④为什么Web starter不需要写版本号？
+```xml
+<!-- 封装 Web 开发功能的场景启动器 -->  
+<dependency>  
+    <groupId>org.springframework.boot</groupId>  
+    <artifactId>spring-boot-starter-web</artifactId>  
+</dependency>
+```
+
+因为当前工程直接或间接继承了spring-boot-starter-parent，它的父工程是spring-boot-dependencies，在这里看到了依赖信息的完整声明：
+```xml
+<dependency>  
+  <groupId>org.springframework.boot</groupId>  
+  <artifactId>spring-boot-starter-web</artifactId>  
+  <version>2.3.6.RELEASE</version>  
+</dependency>
+```
+
+<br/>
+
+从spring-boot-dependencies中看到了很多被管理的依赖，这些依赖都是将来我们可以直接拿来用的。
+
 
 ### ⑤为什么只需要导入Web starter一个依赖？
+![img.png](images/img234.png)
+我们发现，在HelloWorld中，导入了Web starter就能够使用SpringMVC全部的功能了，泰酷辣！<br/>
+
+这是因为SpringBoot开发团队借助Maven依赖的传递性，把当前场景所需要的所有依赖都封装到场景启动器中了（场景启动器也叫“起步依赖”）。<br/>
+
+所以我们在特定场景下开发时，只需要引入starter，而不必关心具体都需要哪些jar包。<br/>
+
+不仅非常方便，而且SpringBoot开发团队对每个场景所需的所有jar包的版本都进行了严格测试（版本仲裁），我们可以放心使用，不会有jar包版本冲突问题。
