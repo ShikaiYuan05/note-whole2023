@@ -94,10 +94,51 @@ public class SampleController {
 
 ## 3、HelloWorld解析
 ### ①为什么没有contextPath？
+![img.png](images/img233.png)
+
+<br/>
+
+通过SpringBoot启动日志我们看到，默认情况下，contextPath被设置为了空字符串，所以8080后面直接对应@GetMapping注解地址即可。
+
+<br/>
+
+如果希望修改contextPath的值，可以编写SpringBoot配置文件。以properties格式配置文件为例：
+```properties
+server.servlet.context-path=/apple
+```
+
+重启SpringBoot应用使配置生效。此时就需要带上contextPath来访问Controller了：
+> http://localhost:8080/apple/say/hello/to/spring/boot
+
 
 ### ②为什么没有配置自动扫描的包？
+因为SpringBoot默认设定了自动扫描包的范围：
+- 主启动类所在包
+- 主启动类所在包的子包
+
+<br/>
 
 ### ③如何自定义扫描包的范围？
+如果希望修改扫描包的范围，可以使用@ComponentScan注解：
+```java
+// 把当前类标记为 SpringBoot 的主启动类  
+@SpringBootApplication  
+  
+// 指定扫描包的范围  
+@ComponentScan("com.atguigu.boot.fixed")  
+public class HelloWorldMainType {  
+  
+    // 当前 SpringBoot 应用程序入口  
+    public static void main(String[] args) {  
+        // 调用 run() 方法进入 SpringBoot 启动流程  
+        // 传入参数1：当前类的 Class 对象  
+        // 传入参数2：main() 方法的参数  
+        SpringApplication.run(HelloWorldMainType.class, args);  
+    }  
+  
+}
+```
+
 
 ### ④为什么Web starter不需要写版本号？
 
