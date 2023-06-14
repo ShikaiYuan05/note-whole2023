@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sky05-High/note05-SpringBoot03-应用.md",
+                "file": "sky05-High/note05-SpringBoot01-入门.md",
                 "mode": "source",
                 "source": false
               }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "sky05-High/note05-SpringBoot03-应用.md",
+                "file": "sky05-High/note05-SpringBoot01-入门.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "sky05-High/note05-SpringBoot03-应用.md",
+                "file": "sky05-High/note05-SpringBoot01-入门.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "sky05-High/note05-SpringBoot03-应用.md"
+                "file": "sky05-High/note05-SpringBoot01-入门.md"
               }
             }
           }
@@ -149,6 +149,7 @@
   },
   "active": "2f62dc473f07161b",
   "lastOpenFiles": [
+    "sky05-High/note05-SpringBoot03-应用.md",
     "sky05-High/note05-SpringBoot03-应用.md~",
     "sky05-High/images/img230.png",
     "sky05-High/img230.png",
@@ -161,7 +162,6 @@
     "sky05-High/img227.png",
     "sky05-High/images/img226.png",
     "sky05-High/note05-SpringBoot02-配置.md",
-    "sky05-High/note05-SpringBoot03-应用.md",
     "sky05-High/note05-SpringBoot02-配置.md~",
     "sky05-High/note05-SpringBoot01-入门.md",
     "sky05-High/note05-SpringBoot01-入门.md~"
