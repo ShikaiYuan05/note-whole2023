@@ -158,7 +158,7 @@ SpringCloud不是单独的一个框架，而是一组框架的总和，她是分
 > 官方介绍：
 > Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus). Coordination of distributed systems leads to boiler plate patterns, and using Spring Cloud developers can quickly stand up services and applications that implement those patterns. They will work well in any distributed environment, including the developer’s own laptop, bare metal data centres, and managed platforms such as Cloud Foundry.
 
-每一个微服务相当于市场上的一个公司，SpringCloud就提供了一整套方案，从各个方面管理这些公司。所以SpringCloud就相当于治理市场的政府。
+每一个微服务相当于市场上的一个公司，SpringCloud就提供了一整套方案，从各个方面管理这些公司。所以SpringCloud就相当于治理市场的ZF。
 - 治理：倾向于宏观的、大范围的管理，而且不仅有**刚性**的约束，还会有一些**柔性**的调控，还有一些状态的监控
 
 
