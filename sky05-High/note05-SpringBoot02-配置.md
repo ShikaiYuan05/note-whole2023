@@ -49,6 +49,8 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 - 键和值之间使用等号
 - 键使用点来表示层级
 - 用反斜杠表示当前行尚未结束，转到下一行继续
+- 井号开头表示注释，注释是单行的
+
 ```properties
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\  
 org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\  
@@ -150,6 +152,7 @@ gmall:
 - 缩进使用空格，空格数相同的为同一级
 - 冒号左边不能有空格，冒号右边必须有空格
 - 横线（减号）开头的值表示数组中的一个元素
+- 井号开头表示注释，注释是单行的
 
 # 三、从配置文件读取数据
 ## 1、使用@Value注解

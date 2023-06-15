@@ -659,8 +659,9 @@ import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;    
 import org.springframework.amqp.rabbit.annotation.RabbitListener;    
 import org.springframework.stereotype.Component;    
-    
-@Component  public class MyMessageListener {    
+
+@Component  
+public class MyMessageListener {    
     
     public static final String EXCHANGE_DIRECT = "exchange.direct.order";    
     public static final String ROUTING_KEY = "order";    
@@ -675,12 +676,135 @@ import org.springframework.stereotype.Component;
                                Message message,    
                                Channel channel) {    
         System.out.println(dateString);    
-    }    
+    }
     
 }
 ```
 
 
-# 七、综合案例
+# 七、SpringBoot应用部署
+## 1、jar包方式部署
+### ①引入构建插件
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+```
 
-# 八、SpringBoot应用部署
+### ②指定打包方式
+因为Maven本身默认情况就是生成jar包，所以不必指定。想指定也行：
+```xml
+<packaging>jar</packaging>
+```
+
+### ③导出jar包
+![img.png](images/img236.png)
+
+### ④启动jar包
+```shell
+java -jar xxx.jar
+```
+
+### ⑤contextPath
+和jar包名称无关，就按SpringBoot应用中配置的访问。
+
+### ⑥问题
+这种方式确实很方便，但是Tomcat用的是SpringBoot内置的，此时无法对Tomcat进行优化定制。<br/>
+所以生产环境通常还是会使用war包方式部署。<br/>
+
+## 2、war包方式部署
+### ①引入构建插件
+和jar包部署时一样：
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+```
+
+### ②指定打包方式
+```xml
+<packaging>war</packaging>
+```
+
+### ③创建Servlet初始化器
+放在扫描包范围内：<br/>
+
+![img.png](images/img235.png)
+
+<br/>
+
+```java
+import com.atguigu.boot.YourApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+
+public class ServletInitializer extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        // 这里要传入的是我们的主启动类的 Class 对象
+        return application.sources(YourApplication.class);
+    }
+}
+```
+
+### ④主启动类增加注解
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+
+@SpringBootApplication
+@ServletComponentScan
+public class YourApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(YourApplication.class, args);
+    }
+
+}
+```
+
+### ⑤导出war包
+![img.png](images/img236.png)
+
+<br/>
+
+### ⑥部署war包
+![img.png](images/img237.png)
+
+<br/>
+
+部署后请启动Tomcat。
+
+### ⑦访问路径说明
+contextPath以war文件解压目录名为准，SpringBoot中配置的此时已经无效了。
+
+# 八、综合案例
+## 1、案例要求
+- 功能1：显示首页
+- 功能2：在首页点击超链接，到下一个页面以列表形式显示全部数据
+- 功能3：点击超链接执行删除操作，成功后回到列表页面
+- 功能4：点击超链接前往添加数据的表单页面，提交表单执行新增，成功后回到列表页面
+- 功能5：点击超链接前往更新数据的表单页面，提交表单执行更新，成功后回到列表页面
+- 功能6：给列表查询功能加缓存功能
+- 功能7：更新缓存
+  - 更新前删除对应缓存
+  - 更新后重新填充缓存
+
+## 2、缓存思路
+- 先查缓存
+  - 缓存命中：返回数据
+  - 缓存未命中，查数据库，然后存入缓存
+
+## 3、Redis数据类型设计
