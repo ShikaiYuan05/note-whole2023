@@ -684,15 +684,23 @@ public class MyMessageListener {
 
 # 七、SpringBoot应用部署
 ## 1、jar包方式部署
+> 这种方式运行SpringBoot应用，还是使用内置Tomcat，服务器环境上有JDK即可。所以按照Maven常规的方式导出的jar包是不够的。<br/>
+> 需要使用SpringBoot定制的jar包。
+
 ### ①引入构建插件
 ```xml
+<!-- build 标签：针对构建过程进行配置 -->
 <build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
+  <!-- plugins 标签：构建过程需要使用的插件 -->
+  <plugins>
+    <!-- plugin 标签：配置具体的一个插件 -->
+    <plugin>
+      <groupId>org.springframework.boot</groupId>
+
+      <!-- SpringBoot参与Maven构建过程专用的插件 -->
+      <artifactId>spring-boot-maven-plugin</artifactId>
+    </plugin>
+  </plugins>
 </build>
 ```
 
@@ -798,7 +806,8 @@ contextPath以war文件解压目录名为准，SpringBoot中配置的此时已�
 - 功能4：点击超链接前往添加数据的表单页面，提交表单执行新增，成功后回到列表页面
 - 功能5：点击超链接前往更新数据的表单页面，提交表单执行更新，成功后回到列表页面
 - 功能6：给列表查询功能加缓存功能
-- 功能7：更新缓存
+- 功能7：删除之后，删除缓存
+- 功能8：更新缓存
   - 更新前删除对应缓存
   - 更新后重新填充缓存
 
@@ -808,3 +817,5 @@ contextPath以war文件解压目录名为准，SpringBoot中配置的此时已�
   - 缓存未命中，查数据库，然后存入缓存
 
 ## 3、Redis数据类型设计
+- Redis 的 list 类型：通过下标访问。而我们希望在更新时通过主键来访问某一条记录，所以不合适。
+- Redis 的 hash 类型：包含所有数据整体，也可以根据主键定位到某一条，所以适合。
