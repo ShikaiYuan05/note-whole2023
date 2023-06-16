@@ -76,7 +76,23 @@ SpringBoot通过场景启动器的机制，达到的效果是：
 ### ③自动配置类是否加载的依据
 ![img.png](images/img243.png)
 
-### ④框架预定义的自动配置类
+<br/>
+
+@ConditionalOnClass(RedisOperations.class)含义：
+- @ConditionalOnClass表示RedisAutoConfiguration类是否加载是有条件的，条件是看RedisOperations接口是否能加载
+- 如果RedisOperations接口能够加载到内存，那么@ConditionalOnClass(RedisOperations.class)条件满足
+- 如果@ConditionalOnClass(RedisOperations.class)条件满足，那么RedisAutoConfiguration类加载到IOC容器
+- RedisOperations接口是spring-data-redis.jar中的
+- spring-data-redis.jar又是spring-boot-starter-data-redis场景启动器导入的
+
+### ④关联SpringBoot配置项
+- 注册配置项类：@EnableConfigurationProperties(RedisProperties.class)
+- 配置项类本身：RedisProperties
+- 配置项类需要加注解：@ConfigurationProperties
+  - prefix 属性：指定SpringBoot配置文件进行配置时使用的前缀
+  - 配置项类中通过getXxx()、setXxx()方法定义属性，这些属性就是可以使用的配置项名称（YAML、properties配置文件中使用的配置项）
+
+### ⑤框架预定义的自动配置类
 这里要读取spring.factories，位置如下：<br/>
 
 ![img.png](images/img239.png)
@@ -146,7 +162,8 @@ public class RedisProperties {
 > ThymeleafProperties<br/>
 > ResourceProperties<br/>
 > MybatisProperties<br/>
-> RedisProperties
+> RedisProperties<br/>
+> RabbitProperties
 
 # 四、启动过程
 ## 1、概述
@@ -184,6 +201,12 @@ SpringApplication.run(主启动类.class, args);
 ![img.png](images/img247.png)
 
 <br/>
+
+![img.png](images/img252.png)
+
+<br/>
+
+![img.png](images/img253.png)
 
 ## 2、内嵌的Web服务器
 <p>Spring Boot通过内嵌的Web服务器来运行Web应用程序。它提供了对多个常见的Web服务器（如Tomcat、Jetty和Undertow）的支持，可以根据应用程序的配置自动选择和配置适当的服务器。</p>
