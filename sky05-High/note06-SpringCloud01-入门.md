@@ -487,7 +487,7 @@ src\\main\\resources\\mapper\\PaymentMapper.xml
     </resultMap>  
   
     <select id="getPaymentById"  parameterType="Long" resultMap="BaseResultMap">  
-            select * from payment where id=#{id}  
+            select id,serial from payment where id=#{id}  
     </select>  
   
 </mapper>
@@ -496,7 +496,7 @@ src\\main\\resources\\mapper\\PaymentMapper.xml
 ### ⑥业务逻辑层
 #### [1]接口
 ```java
-package com.atguigu.springcloud.service;  
+package com.atguigu.springcloud.service.api;  
   
 import com.atguigu.springcloud.entities.Payment;  
 import org.apache.ibatis.annotations.Param;  
@@ -513,7 +513,7 @@ package com.atguigu.springcloud.service.impl;
   
 import com.atguigu.springcloud.dao.PaymentDao;  
 import com.atguigu.springcloud.entities.Payment;  
-import com.atguigu.springcloud.service.PaymentService;  
+import com.atguigu.springcloud.service.api.PaymentService;  
 import org.apache.ibatis.annotations.Param;  
 import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.stereotype.Service;  
@@ -541,7 +541,7 @@ package com.atguigu.springcloud.controller;
 
 import com.atguigu.springcloud.entities.CommonResult;
 import com.atguigu.springcloud.entities.Payment;
-import com.atguigu.springcloud.service.PaymentService;
+import com.atguigu.springcloud.service.api.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
