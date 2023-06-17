@@ -1,6 +1,6 @@
 # 一、简介
 ## 1、基本信息
-<p>Spring Cloud Ribbon是基于Netflix Ribbon实现的一套客户端负载均衡的工具。</p>
+<p>Spring Cloud Ribbon是基于Netflix Ribbon实现的一套客户端负载均衡（Client Load Balance）的工具。</p>
 
 <p>简单的说，Ribbon是Netflix发布的开源项目，主要功能是提供客户端的软件负载均衡算法和服务调用。</p>
 
@@ -18,12 +18,12 @@ Ribbon最大的特点是：客户端负载均衡。为什么这么说呢？因�
 - Ribbon是Java写的，Nginx是C写的
 - Ribbon基于SpringCloud，Nginx直接安装在Linux系统上
 - Ribbon是客户端负载均衡，相当于正向代理；Nginx为服务器端提供代理，属于反向代理
-- Ribbon是为微服务中consumer代理去访问provider；Nginx是为微服务系统外的请求做负载均衡访问微服务系统
+- Ribbon是为微服务中代理consumer去访问provider；Nginx是为微服务系统外的请求做负载均衡访问微服务系统
 
 ## 3、工作机制
 <p>第一步，先选择EurekaServer，它优先选择在同一个区域内负载较少的server。</p>
 
-<p>第二步，再根据用户指定的负载均衡策略以及目标微服务名称，根据微服务名称到Eureka服务器查找对应的服务列表。根据服务列表，选择集群中某一个实例的地址。其中Ribbon提供了多种策略。比如：轮询、随机和根据响应时间加权。</p>
+<p>第二步，根据微服务名称到Eureka服务器查找对应的服务列表。根据服务列表，选择集群中某一个实例的地址。其中Ribbon提供了多种策略。比如：轮询、随机和根据响应时间加权。</p>
 
 <p>第三步：拿到具体某一个实例的地址后，调用RestTemplate发送请求。</p>
 

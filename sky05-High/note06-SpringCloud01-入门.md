@@ -280,20 +280,7 @@ SpringCloud所整合的很多具体框架，有它们自己各自的版本，这
             <optional>true</optional>  
         </dependency>  
     </dependencies>  
-</dependencyManagement>  
-  
-<build>  
-    <plugins>  
-        <plugin>  
-            <groupId>org.springframework.boot</groupId>  
-            <artifactId>spring-boot-maven-plugin</artifactId>  
-            <configuration>  
-                <fork>true</fork>  
-                <addResources>true</addResources>  
-            </configuration>  
-        </plugin>  
-    </plugins>  
-</build>
+</dependencyManagement>
 ```
 
 ## 2、微服务provider-payment
