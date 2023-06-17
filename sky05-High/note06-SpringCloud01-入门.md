@@ -56,6 +56,15 @@ SOA：Service Oriented Architecture面向服务的架构<br/>
 
 对于整个项目的层面也是“高内聚、低耦合”理念的体现。而且把服务的功能暴露到网络上之后，不仅项目内部可以访问使用，如有需要项目外部也可以访问。
 
+<br/>
+
+> 调用接口怎么理解？<br/>
+> 这里的接口是指我们JavaSE的时候学习的interface吗？<br/>
+> 服务提供者会声明接口（interface），接口中的抽象方法就定义了入参、返回值这些信息。<br/>
+> 服务消费者根据接口中定义的入参、返回值执行远程调用。<br/>
+> 所以当我们说到调用一个接口，实际上完整表述是：调用一个以某个interface接口为代表的远程方法。<br/>
+> 这里也是面向接口编程思想的体现：只要interface声明不变，不管服务提供者怎么调整，服务消费者都不需要改变。
+
 ### ⑥微服务
 #### [1]概念
 微服务是马丁·福勒和詹姆斯·路易斯提出的架构风格理念。马丁福勒博客对微服务的官方定义是：
@@ -189,9 +198,9 @@ SpringCloud所整合的很多具体框架，有它们自己各自的版本，这
 - 初始状态：微服务A通过RestTemplate调用微服务B
 - 为了实时获取微服务B的状态、参数变化，引入注册中心：Eureka、Nacos
 - 微服务B扩展为集群，微服务A需要有能力负载均衡：Ribbon
-- 微服务A调用微服务B始终没有返回响应或调用失败，为了故障蔓延，引入熔断器：Hystrix
-- 微服务A靠编码调用RestTemplate、负载均衡、熔断器繁琐，引入Feign调用：OpenFeign
-- 整个系统微服务众多，由网关提供对外的统一入口，同时解决跨域问题：Gateway
+- 微服务A调用微服务B始终没有返回响应或调用失败，为了避免故障蔓延，引入熔断器：Hystrix
+- 微服务A调用微服务B，靠自己写代码（编程式）涉及RestTemplate、负载均衡、熔断器非常繁琐，所以引入Feign声明式远程调用：OpenFeign
+- 整个系统微服务众多，由网关提供对外的统一入口，同时解决跨域问题、还可以执行过滤、鉴权等操作：Gateway
 - 逐一维护各个微服务配置信息繁琐，引入配置中心：Nacos
 
 ## 3、两个时代
@@ -306,7 +315,7 @@ SpringCloud所整合的很多具体框架，有它们自己各自的版本，这
     <dependency>  
         <groupId>com.alibaba</groupId>  
         <artifactId>druid-spring-boot-starter</artifactId>  
-        <version>1.1.10</version>  
+        <version>1.2.16</version>  
     </dependency>  
     <dependency>  
         <groupId>mysql</groupId>  
