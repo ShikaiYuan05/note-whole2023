@@ -1,7 +1,7 @@
 # 一、简介
 一句话：网关就是整个微服务系统的入口。
 - 前端请求发送给网关，网关通过『**断言**』进行匹配。
-- 已匹配的请求被网关『**路由**』到对应的微服务
+- 已匹配的请求经过网关的『**路由**』进入对应的微服务
 - 如有需要，网关还可以对请求进行『**过滤**』
 
 # 二、搭建测试环境
@@ -229,26 +229,26 @@ public class MyAuthFilter implements GlobalFilter {
  */private Mono<Void> aSynchronizeRequestRefuse(ServerWebExchange exchange) {  
   
     // 1、创建 Map 对象封装数据    
-Map<String, String> map = new HashMap<>();  
+	Map<String, String> map = new HashMap<>();  
     map.put("k1", "v1");  
   
     // 2、把 Result 对象转换为 JSON 字符串    
-String resultJSON = new JSONConverter().convert(map, null).toJSONString(4);  
+	String resultJSON = new JSONConverter().convert(map, null).toJSONString(4);  
   
     // 3、为了后面设置响应体，JSON 字符串需要获取字节数组    
-byte[] bytes = resultJSON.getBytes();  
+	byte[] bytes = resultJSON.getBytes();  
   
     // 4、获取响应对象    
-ServerHttpResponse response = exchange.getResponse();  
+	ServerHttpResponse response = exchange.getResponse();  
   
     // 5、设置响应消息头    
-response.getHeaders().set("Content-type", "application/json;charset=UTF-8");  
+	response.getHeaders().set("Content-type", "application/json;charset=UTF-8");  
   
     // 6、把字节数组放入响应缓冲区    
-DataBuffer wrap = response.bufferFactory().wrap(bytes);  
+	DataBuffer wrap = response.bufferFactory().wrap(bytes);  
   
     // 7、封装为 Mono 对象返回    
-return response.writeWith(Mono.just(wrap));  
+	return response.writeWith(Mono.just(wrap));  
 }
 ```
 
@@ -279,14 +279,14 @@ public class MyFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {  
   
         // 1、获取请求对象    
-ServerHttpRequest request = exchange.getRequest();  
+		ServerHttpRequest request = exchange.getRequest();  
   
         // 2、获取请求路径    
-String path = request.getURI().getPath();  
+		String path = request.getURI().getPath();  
         System.out.println("path = " + path);  
   
         // 3、获取请求参数    
-MultiValueMap<String, String> queryParams = request.getQueryParams();  
+		MultiValueMap<String, String> queryParams = request.getQueryParams();  
         String userName = queryParams.get("userName").get(0);  
         if ("tom".equals(userName)) {  
             return synchronizeRequestRefuse(exchange);  
@@ -297,7 +297,7 @@ MultiValueMap<String, String> queryParams = request.getQueryParams();
         }  
   
         // 4、放行    
-return chain.filter(exchange);  
+		return chain.filter(exchange);  
     }  
   
     /**  
@@ -308,19 +308,19 @@ return chain.filter(exchange);
      */    private Mono<Void> synchronizeRequestRefuse(ServerWebExchange exchange) {  
   
         // 1、获取 Response 对象    
-ServerHttpResponse response = exchange.getResponse();  
+		ServerHttpResponse response = exchange.getResponse();  
   
         // 2、设置响应状态码：表示重定向    
-response.setStatusCode(HttpStatus.SEE_OTHER);  
+		response.setStatusCode(HttpStatus.SEE_OTHER);  
   
         // 3、指定重定向的目标地址    
-String location = "http://www.baidu.com";  
+		String location = "http://www.baidu.com";  
   
         // 4、执行响应消息头：指定 locationresponse.getHeaders().set("location", location);  
   
         // 5、响应设置完成：把一个设置好的 response 对象交给框架，    
-// 框架就知道要去执行重定向了    
-return response.setComplete();  
+		// 框架就知道要去执行重定向了    
+		return response.setComplete();  
     }  
   
     /**  
@@ -331,26 +331,26 @@ return response.setComplete();
      */    private Mono<Void> aSynchronizeRequestRefuse(ServerWebExchange exchange) {  
   
         // 1、创建 Map 对象封装数据    
-Map<String, String> map = new HashMap<>();  
+		Map<String, String> map = new HashMap<>();  
         map.put("k1", "v1");  
   
         // 2、把 Result 对象转换为 JSON 字符串    
-String resultJSON = new JSONConverter().convert(map, null).toJSONString(4);  
+		String resultJSON = new JSONConverter().convert(map, null).toJSONString(4);  
   
         // 3、为了后面设置响应体，JSON 字符串需要获取字节数组    
-byte[] bytes = resultJSON.getBytes();  
+		byte[] bytes = resultJSON.getBytes();  
   
         // 4、获取响应对象    
-ServerHttpResponse response = exchange.getResponse();  
+		ServerHttpResponse response = exchange.getResponse();  
   
         // 5、设置响应消息头    
-response.getHeaders().set("Content-type", "application/json;charset=UTF-8");  
+		response.getHeaders().set("Content-type", "application/json;charset=UTF-8");  
   
         // 6、把字节数组放入响应缓冲区    
-DataBuffer wrap = response.bufferFactory().wrap(bytes);  
+		DataBuffer wrap = response.bufferFactory().wrap(bytes);  
   
         // 7、封装为 Mono 对象返回    
-return response.writeWith(Mono.just(wrap));  
+		return response.writeWith(Mono.just(wrap));  
     }  
 }
 ```

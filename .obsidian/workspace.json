@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
+                "file": "sky05-High/note06-SpringCloud06-Netflix-Gateway.md",
                 "mode": "source",
                 "source": false
               }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
+                "file": "sky05-High/note06-SpringCloud06-Netflix-Gateway.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
+                "file": "sky05-High/note06-SpringCloud06-Netflix-Gateway.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md"
+                "file": "sky05-High/note06-SpringCloud06-Netflix-Gateway.md"
               }
             }
           }
@@ -149,6 +149,7 @@
   },
   "active": "2f62dc473f07161b",
   "lastOpenFiles": [
+    "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
     "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md~",
     "sky05-High/images/img254.png",
     "sky05-High/img254.png",
