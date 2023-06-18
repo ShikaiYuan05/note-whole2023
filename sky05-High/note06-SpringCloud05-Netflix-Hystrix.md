@@ -591,6 +591,13 @@ public String paymentCircuitBreaker(@PathVariable Integer id) {
 ```
 
 # 五、仪表盘
+
+<br/>
+
+![img.png](images/img254.png)
+
+<br/>
+
 ## 1、创建module
 ```xml
 <dependencies>  
@@ -744,8 +751,8 @@ hystrix:
 - Ribbon超时：就Ribbon本身来说，不考虑Hystrix的熔断、降级方案，超时会报错。就像前面看到的那样。
 - Hystrix超时：执行熔断、降级操作，执行兜底方案，给用户返回的响应比直接报错要好一些
 
-#### [2]配置建议
-- 建议1：关于超时时间具体数值的设置
+#### [2]超时时间具体数值的设置
+
 具体的超时时间设置应该根据你的系统需求和网络环境来决定。以下是一些设置超时时间的建议：
 
 1. 网络延迟较低的情况下，可以将超时时间设置为较小的值，例如1000毫秒（1秒）。这样可以尽快获得响应并及时处理。
@@ -767,7 +774,7 @@ hystrix:
 
 总结来说，超时时间的设置应综合考虑系统需求、网络环境和实际场景，进行测试和调优，以达到合理的响应时间和系统稳定性。
 
-- 建议2：Ribbon和Hystrix之间的彼此协调
+#### [3]Ribbon和Hystrix之间的彼此协调
 如果Ribbon的`ReadTimeout`设置的时间小于Hystrix的`timeoutInMilliseconds`，可能会导致Ribbon在等待响应的过程中直接报错，而没有触发Hystrix的熔断机制。
 
 <br/>
