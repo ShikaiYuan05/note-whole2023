@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sky05-High/note05-SpringBoot05-了解.md",
+                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "73f7c919cc7878cc",
@@ -85,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "sky05-High/note05-SpringBoot05-了解.md",
+                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "sky05-High/note05-SpringBoot05-了解.md",
+                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "sky05-High/note05-SpringBoot05-了解.md"
+                "file": "sky05-High/note06-SpringCloud05-Netflix-Hystrix.md"
               }
             }
           }
@@ -148,8 +149,11 @@
   },
   "active": "2f62dc473f07161b",
   "lastOpenFiles": [
-    "sky05-High/note05-SpringBoot04-原理.md",
+    "sky05-High/note06-SpringCloud04-Netflix-OpenFeign.md",
+    "sky05-High/note06-SpringCloud03-Netflix-Ribbon.md",
+    "sky05-High/note06-SpringCloud01-入门.md",
     "sky05-High/note05-SpringBoot05-了解.md",
+    "sky05-High/note05-SpringBoot04-原理.md",
     "sky05-High/note05-SpringBoot03-应用.md",
     "sky05-High/在线笔记地址.txt",
     "sky05-High/note05-SpringBoot02-配置.md",

@@ -75,11 +75,13 @@ public CommonResult<Payment> getPaymentById(@PathVariable("id") Long id, HttpSer
     Payment payment = paymentService.getPaymentById(id);  
     log.info("*****查询结果："+payment);  
     if (payment!=null){  //说明有数据，能查询成功  
-        String serial = payment.getSerial() + " port：" + request.getServerPort();  
+        // 附加当前服务器端口号，目的是了解当前请求访问的是集群中的哪一个实例  
+        String serial = payment.getSerial() + " " + request.getServerPort();  
         payment.setSerial(serial);  
-        return new CommonResult(200,"查询成功",payment);  
+  
+        return new CommonResult<>(200,"查询成功", payment);  
     }else {  
-        return new CommonResult(444,"没有对应记录，查询ID："+id,null);  
+        return new CommonResult<>(444,"没有对应记录，查询ID："+id,null);  
     }  
 }
 ```
@@ -90,7 +92,7 @@ public CommonResult<Payment> getPaymentById(@PathVariable("id") Long id, HttpSer
 ![images](./images/img141.png)
 
 # 三、负载均衡策略
-## 1、策略介绍
+## 1、策略介绍[面试]
 -   轮询 RoundRobinRule：轮流访问每一个集群实例
 -   权重 WeightedResponseTimeRule：权重高的实例被访问到的几率大，而权重值是根据服务提供者的响应时间设定的，响应时间越长权重值越小。它的实现原理是，刚开始使用轮询策略并开启一个计时器，每一段时间收集一次所有服务提供者的平均响应时间，然后再给每个服务提供者附上一个权重，权重越高被选中的概率也越大。
 -   随机 RandomRule：从集群服务列表中随机选择一个访问
@@ -101,7 +103,7 @@ public CommonResult<Payment> getPaymentById(@PathVariable("id") Long id, HttpSer
 
 > 不管具体采用哪一个策略，最初确定第一个被访问的微服务实例时都是随机选择的。 即使是轮询也只是每一轮访问的顺序一样，第一轮访问的顺序是随机的。
 
-## 2、定制策略
+## 2、定制策略[了解]
 ### ①说明
 如果不希望你所定制的策略在整个IOC容器范围内生效，则把它放在自动扫描包的范围之外。
 
