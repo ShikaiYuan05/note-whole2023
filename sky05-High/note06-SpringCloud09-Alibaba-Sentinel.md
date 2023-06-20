@@ -1,10 +1,15 @@
+
+> Spring Cloud Alibaba版的Hystrix
+
+<br/>
+
 # 一、下载安装
 ## 1、下载地址
 https://github.com/alibaba/Sentinel/releases/download/1.8.2/sentinel-dashboard-1.8.2.jar
 
 ## 2、启动
 ```bash
-sentinel-dashboard-1.8.2.jar
+java -jar sentinel-dashboard-1.8.2.jar
 ```
 
 ## 3、图形化界面

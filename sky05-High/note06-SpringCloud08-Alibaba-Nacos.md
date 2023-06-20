@@ -242,6 +242,11 @@ public class OrderNacosController{
 业务功能测试访问地址：http://localhost:83/consumer/payment/nacos/55
 
 # 四、在Nacos中配置服务
+实际项目中，很可能包含很多微服务，比如：一个项目几十个微服务。<br/>
+此时如果需要修改某个微服务的配置，修改之后再重启（甚至是重新部署）会很繁琐、费时间。<br/>
+所以采用配置中心的技术，对微服务中的配置进行在线、实时的修改。<br/>
+微服务不需要重启、重新部署。<br/>
+
 ## 1、Nacos中配置信息的逻辑结构
 ![images](./images/img174.png)
 
@@ -304,9 +309,9 @@ nacos-payment-provider-dev.yaml
 
 ##### <2>新建配置文件
 <p>文件名：bootstrap.yaml</p>
-<p>为什么要创建这个配置文件呢？</p>
-<p>Nacos和Netflix系列中的组件：Config一样，在项目初始化时，要先从配置中心拉取配置，才能保证项目的正常启动。</p>
-<p>SpringBoot中配置文件的加载是存在优先级顺序的，bootstrap.yaml优先级高于application.yaml。</p>
+
+<p>文件内容如下：</p>
+
 ```yaml
 server:  
   port: 3377  
@@ -323,8 +328,16 @@ spring:
         file-extension: yaml #指定yaml格式的配置（yml和yaml都可以）
 ```
 
+<p>为什么要创建这个配置文件呢？</p>
+<p>Nacos和Config(Netflix系列中的组件)一样，在项目初始化时，要先从配置中心拉取配置，才能保证项目的正常启动。</p>
+<p>SpringBoot中配置文件的加载是存在优先级顺序的，bootstrap.yaml优先级高于application.yaml。</p>
+
+<br/>
+
 ##### <3>application.yml
 ```yaml
+# 为什么激活dev？
+# 因为dev配置在nacos上，激活就可以使用了
 spring:  
   profiles:  
     active: dev
@@ -337,10 +350,10 @@ private String configContent;
 ```
 
 ##### <5>自动更新配置
-在读取配置的类上，使用注解：
+在读取配置的类上，使用注解@RefreshScope：
 ```java
 @RestController  
-@RefreshScope  
+@RefreshScope
 public class PaymentController{  
     @Value("${server.port}")  
     private String serverPort;  
@@ -428,6 +441,14 @@ nacos-config-client-dev.yaml
 ### ①建库建表
 执行SQL语句，建库建表：<br/>
 
+我们自己创建数据库：
+```sql
+create database nacos_config;
+use nacos_config;
+```
+
+<br/>
+
 ![images](./images/img194.png)
 
 ### ②配置Nacos数据源
@@ -508,7 +529,7 @@ localhost:38848
 
 ### ⑤Nginx配置参考
 ```text
-upstream nacoscluster{ 
+upstream nacoscluster{
     server 192.168.137.150:8848;
     server 192.168.137.150:8849;
     server 192.168.137.150:8850;
