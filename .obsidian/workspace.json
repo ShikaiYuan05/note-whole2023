@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "c4faf6f6acb1c60b",
+        "id": "9c311349ff7a7353",
         "type": "tabs",
         "children": [
           {
-            "id": "adfb044acb79c4ca",
+            "id": "5be5236a90f7929d",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -147,10 +147,11 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "adfb044acb79c4ca",
+  "active": "5be5236a90f7929d",
   "lastOpenFiles": [
-    "sky05-High/note06-SpringCloud08-Alibaba-Nacos.md",
+    "sky05-High/note02-ElasticSearch.md",
     "sky05-High/note06-SpringCloud09-Alibaba-Sentinel.md",
+    "sky05-High/note06-SpringCloud08-Alibaba-Nacos.md",
     "sky05-High/note06-SpringCloud06-Netflix-Gateway.md",
     "sky05-High/note06-SpringCloud06-Netflix-Gateway.md~",
     "sky05-High/images/img264.png",

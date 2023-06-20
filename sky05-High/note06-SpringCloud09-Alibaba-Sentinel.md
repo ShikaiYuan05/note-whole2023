@@ -21,12 +21,7 @@ java -jar sentinel-dashboard-1.8.2.jar
 ### ①提供端
 #### [1]引入依赖
 ```xml
-<dependencies>  
-    <dependency>  
-        <groupId>com.atguigu.cloud</groupId>  
-        <artifactId>common-api</artifactId>  
-        <version>1.0-SNAPSHOT</version>  
-    </dependency>  
+<dependencies>
     <dependency>  
         <groupId>com.alibaba.cloud</groupId>  
         <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>  
@@ -159,7 +154,7 @@ Query Per Second：每秒请求数量。
 - 阈值类型：QPS
 - 流控模式：直接
 - 流控效果：快速失败
-Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow limiting)
+把QPS设置为1（比较容易看到结果），然后反复刷新访问/testA。Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow limiting)
 
 #### [2]case02
 - 资源名：/testA
@@ -190,6 +185,8 @@ Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow
 - 流控效果：**Warm Up**
 - 预热时长：5
 
+为了便于操作，我们借助PostMan来对B造成有压力的访问。
+
 #### [5]case05
 - 资源名：/testB
 - 阈值类型：QPS
@@ -200,6 +197,13 @@ Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow
 - 测试效果：请求一个一个被放行到微服务的Controller方法
 
 ## 2、熔断规则
+
+> 熔断和限流的区别：<br/>
+> ❤熔断是由于微服务自身发生问题，采取熔断策略避免单个微服务的故障蔓延到整个系统。<br/>
+> ❤限流是出于保护微服务的目的，在外界压力太大的时候，限制流量。
+
+<br/>
+
 ### ①规则介绍
 熔断规则就是指定在哪些情况下，会触发熔断操作。
 - 慢调用比例阈值：同时满足以下两个条件，触发熔断
@@ -220,6 +224,9 @@ Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow
 ### ②测试案例
 #### [1]case01
 ![images](./images/img200.png)
+
+<br/>
+
 触发熔断规则之后，会看到页面显示：Blocked by Sentinel (flow limiting)
 
 #### [2]case02
@@ -230,9 +237,7 @@ Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow
 #### [3]case03
 ![images](./images/img202.png)
 
-> 熔断和限流的区别：<br/>
-> ❤熔断是由于微服务自身发生问题，采取熔断策略避免单个微服务的故障蔓延到整个系统。<br/>
-> ❤限流是出于保护微服务的目的，在外界压力太大的时候，限制流量。
+<br/>
 
 ## 3、热点Key限流
 考虑到实际项目中，即使是同一个资源，也会出现：不同参数对应的流量压力不同。<br/>
@@ -243,6 +248,8 @@ Java代码没有修改，限流效果是页面看到：Blocked by Sentinel (flow
 <br/>
 
 ![images](./images/img204.png)
+<br/>
+
 **注意**：使用热点Key规则时务必加入下面依赖！
 ```xml
 <dependency> 
@@ -331,6 +338,8 @@ spring:
 
 ### ③Nacos配置中心添加配置
 ![images](./images/image_222.webp)
+
+<br/>
 
 配置内容如下：
 ```json

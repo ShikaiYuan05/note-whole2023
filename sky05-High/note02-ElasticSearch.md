@@ -132,8 +132,9 @@
 <br/>
 
 ## 4、安装 Kibana
-ElasticSearch 对外都是基于 RESTFul 风格提供 HTTP 服务，所以可以使用 Postman 来操作 ES。
-另外，还可以使用 Kibana 这样的图形化界面客户端使操作更简单。下载地址：https://www.elastic.co/cn/downloads/past-releases/kibana-7-8-0
+ElasticSearch 对外都是基于 RESTFul 风格提供 HTTP 服务，所以可以使用 Postman 来操作 ES。<br/>
+另外，还可以使用 Kibana 这样的图形化界面客户端使操作更简单。<br/>
+下载地址：https://www.elastic.co/cn/downloads/past-releases/kibana-7-8-0<br/>
 下载后解压。
 
 <br/>
@@ -158,7 +159,7 @@ i18n.locale: "zh-CN"
 
 ![images](./images/img26.jpg)
 
-## 5、安装 IK 分词器
+## 5、安装 IK 中文分词器
 ### ①下载地址
 > https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.8.0/elasticsearch-analysis-ik-7.8.0.zip
 
@@ -188,6 +189,7 @@ POST _analyze
 ```
 
 # 四、ElasticSearch 核心概念
+
 |ElasticSearch|MySQL|
 |-|-|
 |index|数据库|
@@ -195,6 +197,8 @@ POST _analyze
 |~~type~~|表|
 |document|记录/行|
 |field|字段/列|
+
+<br/>
 
 > ElasticSearch较高的版本已经废除了type这个概念。
 
@@ -243,7 +247,7 @@ PUT /索引名称/_doc/文档id
 }
 ```
 
-文档 id 如果存在则更新文档；不存在则新建文档。
+文档 id 如果存在则更新文档；不存在则新建文档。<br/>
 
 操作举例：
 ```text
@@ -256,8 +260,9 @@ PUT /my_index/_doc/1
 }
 ```
 
-ElasticSearch 有个强大的功能：类型推断。我们直接保存数据，ElasticSearch 可以根据我们保存的数据来推测它的类型。
-但这也是双刃剑，有的时候 ElasticSearch 猜测的类型并不符合我们的预期。所以如果有特定需要那么就要在index中创建mapping来指定字段类型。
+ElasticSearch 有个强大的功能：类型推断。我们直接保存数据，ElasticSearch 可以根据我们保存的数据来推测它的类型。<br/>
+但这也是双刃剑，有的时候 ElasticSearch 猜测的类型并不符合我们的预期。所以如果有特定需要那么就要在index中创建mapping来指定字段类型。<br/>
+
 |数据|对应的类型|
 |-|-|
 |null|不添加字段|
@@ -431,19 +436,21 @@ PUT /index_song
 }
 ```
 
+<br/>
+
 ### ③字段属性说明
+
 #### [1]是否分词
 - 需要分词的情况：分词之后，分词结果是有意义的、会被搜索的。例如：歌曲名称
 - 不分词的情况：分词之后，分词结果没有意义，不会被搜索。例如：歌曲图片地址、地名、人名
+
+<br/>
 
 #### [2]是否索引
 - 需要索引的情况：要搜索这个字段，就基于它建立索引。例如：歌曲名称
 - 不需要索引的情况：不会被搜索的字段，不必建立索引。例如：歌曲图片地址
 
-#### [3]是否存储
-是否存储是指：该字段是否在 _source 之外再做一个额外的存储。这样对于做了存储的字段可以通过 stored_fields 方式获取。
-这一点我们作为初学者不必深究，我们只需要知道：即使我们设置了 store 为 false，查询结果中 _source 这里也仍然能够显示该字段。
-所以通常是没有影响的。
+<br/>
 
 # 六、DSL高级查询
 ## 1、测试数据
@@ -978,7 +985,7 @@ GET /db_hr/_search
 ```
 
 ## 4、分页
-### ①常规分页
+
 使用 from、size 指定分页参数。<br/>
 计算 from 值的公式：(pageNo-1)\*pageSize<br/>
 适用场景：页面显示分页数据。因为from、size其实是先把所有查询结果取出再根据from、size截取，所以不适合大数据量。
@@ -991,22 +998,6 @@ GET /db_hr/_search
   },
   "from": 0,
   "size": 5
-}
-```
-
-### ②滚动分页
-m表示分钟，s表示秒，执行滚动分页后，scroll_id会被缓存指定的时间。<br/>
-适用场景：大数据量分批取出。
-```text
-GET db_hr/_search?scroll=5m
-{
-  "size": 1
-}
-
-GET /_search/scroll
-{
-  "scroll":"5m",
-  "scroll_id":"FGluY2x1ZGVfY29udGV4dF91dWlkDXF1ZXJ5QW5kRmV0Y2gBFGMzVEpnNFlCaWd0WVJkT1BoZFloAAAAAAAAIuAWVHpwNVBiaTBUMXFzdlBqQWd5N1lHUQ=="
 }
 ```
 
@@ -1036,29 +1027,6 @@ GET /db_hr/_search
 }
 ```
 
-## 6、模糊查询
-```text
-GET /db_hr/_search
-{
-  "query": {
-    "fuzzy": {
-      "emp_name": {
-        "value": "ader",
-        "fuzziness": "auto:2,5"
-      }
-    }
-  }
-}
-```
-fuzziness格式的说明：<br/>
-本次查询允许的最大编辑距离，默认不开启模糊查询，相当于fuzziness=0。<br/>
-支持的格式：<br/>
-- 可以是数字（0、1、2）代表固定的最大编辑距离<br/>
-- 自动模式，AUTO:[low],[high]的格式，含义为：<br/>
-    - 查询词长度在[0-low)范围内编辑距离为0（即强匹配)<br/>
-    - [low, high)范围内允许编辑一次<br/>
-    - &gt;high允许编辑2次<br/>
-    - 也可以只写AUTO代表默认的自动模式，相当于AUTO:3,6<br/>
 
 # 八、High Level client 操作 ElasticSearch
 
@@ -1229,7 +1197,8 @@ public class ElasticSearchTest {
 
 ## 2、索引相关操作
 ### ①创建索引
-CreateIndexRequest导包时使用：org.elasticsearch.client.indices.CreateIndexRequest
+CreateIndexRequest导包时使用：org.elasticsearch.client.indices.CreateIndexRequest<br/>
+
 ```java
 @Test
 public void createIndex() throws IOException {
@@ -1740,7 +1709,7 @@ public void testDIY() {
 }
 ```
 
-# 十、ElasticSearch 集群
+# 十、ElasticSearch 集群[选学]
 ## 1、需求
 单台ElasticSearch服务器往往都有最大的负载能力的限制。超过这个阈值，服务器性能就会大大降低甚至不可用。<br/>
 所以生产环境中，一般都需要搭建ElasticSearch集群。<br/>
@@ -1896,12 +1865,10 @@ Elasticsearch 对这一切的管理都是透明的。
 elasticsearch-cluster
 
 ### ②复制 ES 目录
-把原来的 ES 解压目录复制成三份：
+先删除data目录，然后把原来的 ES 解压目录复制成三份：
 ![images](./images/img32.jpg)
 
 <br/>
-
-注意：复制之后 data 目录要删除。
 
 ### ③修改配置文件
 config/elasticsearch.yml
@@ -2055,29 +2022,3 @@ POST /shopping/_doc/1
     "price":3999.00
 }
 ```
-
-## 5、内部机制
-### ①写流程
-![images](./images/img35.png)
-
-<br/>
-
-- 第一步: 客户端选择DataNode节点发送请求，如上图架构，假设发送到node-2节点上。此时被选择的node-2节点也称为coordinating node(协调节点)
-- 第二步: 协调节点根据路由规则计算分片索引位置。并将请求发送到分片索引对应的主分片机器上(这里假设分片计算后的值为0，那么请求会命中到node-3节点上)。
-    - 计算分片索引位置: shard = hash(routing) % number_of_primary_shards，routing可以自己设定，一般默认为文档的ID。
-- 第三步: 当主分片文档写入完成后，同时将数据推送到与之对应的副本分片进行写入操作
-- 第四步: 当分片完成了写入后再由协调节点将操作结果返回给客户端
-
-### ②读流程
-![images](./images/img31.jpg)
-
-<br/>
-
-- 第一步:客户端选择DataNode节点发送请求，如上图架构，假设发送到node-2节点上。此时被选择的node-2节点也称为coordinating node(协调节点)
-- 第二步: 协调节点将从客户端获取到的请求数据转发到其它节点
-- 第三步: 轮询其它节点将查询结果文档ID、节点、分片信息返回给协调节点
-- 第四步: 协调节点通过文档ID、节点信息等发送get请求给其它节点进行数据获取，最后进行汇总排序将数据返回给客户端
-
-## 6、扩展阅读
-https://www.wolai.com/iPzAwUYYK4AcekbBaJw6Ya<br/>
-https://www.wolai.com/mGEdEkzNdafB6qeA9RFYTu
