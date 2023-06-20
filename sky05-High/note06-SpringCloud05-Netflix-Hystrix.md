@@ -24,7 +24,7 @@
 ![images](./images/img156.png)
 
 ### ②备选方案
-为了配合断路器的使用，Consumer和Provider两端都可以提前准备备选方案。<br/>
+为了配合断路器的使用，Consumer和Provider两端都可以提前在开发时准备备选方案。<br/>
 一旦出现故障则执行备选方案。<br/>
 备选方案肯定没办法返回正常状态下应该返回的数据。但是有如下好处：
 - 调用我的人不至于拿到一个抛异常的信息，我在备选方案中返回的是一个相对友好的信息
@@ -45,6 +45,12 @@
 所以服务降级就是：虽然不能给用户返回正常的结果，但是还是返回一个提示信息。虽然比用户预期的体验差一些，但是比抛异常、报错这样还是好一些。<br/>
 
 前面提到的备选方案，其实就是在后端实现服务降级的一个具体措施。<br/>
+
+![img.png](images/img256.png)
+
+<br/>
+
+![img.png](images/img257.png)
 
 # 二、准备工作
 ## 1、Jmeter使用
@@ -376,7 +382,13 @@ public class OrderHystrixController {
 
 # 三、服务降级
 ## 1、提供端
-### ①声明备选方法
+### ①主启动类增加注解
+```java
+// 启用断路器功能
+@EnableCircuitBreaker
+```
+
+### ②声明备选方法
 ![images](./images/img164.png)
 
 ```java
@@ -386,7 +398,7 @@ public String payment_TimeoutFallBack(Integer id) {
 }
 ```
 
-### ②配置降级
+### ③配置降级
 ```java
 // @HystrixCommand 执行 Hystrix 相关设置  
 @HystrixCommand(  
@@ -416,8 +428,10 @@ public String payment_Timeout(Integer id){
 ```yaml
 feign:  
   hystrix:  
-    enabled: true #如果处理自身的容错就开启。开启方式与生产端不一样。
+    enabled: true #如果处理自身的容错就开启。开启方式与提供端不一样。
 ```
+<p>当设置feign.hystrix.enabled为true时，Feign客户端将使用Hystrix来包装请求，并提供故障保护、线程池隔离、熔断器等功能。这样可以防止由于远程服务不可用或响应时间过长而导致的级联故障，并提高系统的可靠性和弹性。</p>
+
 
 ### ②主启动类增加注解
 ```java
@@ -531,6 +545,31 @@ public interface PaymentHystrixService {
 }
 ```
 
+<p>在@FeignClient注解中，fallback属性和fallbackFactory属性都用于指定服务降级处理的类，但有一些区别。</p>
+
+1. fallback属性：
+    
+    - 类型：Class对象
+    - 使用方式：@FeignClient(fallback = YourFallbackClass.class)
+    - 功能：指定一个类作为服务降级处理的实现类。该类需要实现对应Feign接口，并提供降级处理的方法。当远程服务调用失败或超时时，Feign将会调用降级类中的对应方法来返回默认值或进行其他处理。
+    
+1. fallbackFactory属性：
+    
+    - 类型：Class对象
+    - 使用方式：@FeignClient(fallbackFactory = YourFallbackFactoryClass.class)
+    - 功能：指定一个工厂类用于创建服务降级处理的实例。该工厂类需要实现FallbackFactory接口，并提供创建降级类实例的方法。Feign在需要降级处理时，将会调用工厂类的create方法来创建降级类的实例，然后调用实例中的降级方法。
+
+<br/>
+
+区别：
+- fallback属性只能指定一个降级处理的类，而fallbackFactory属性可以指定一个工厂类，从而支持动态创建多个降级处理的实例。
+- fallback属性中的降级类需要实现Feign接口，而fallbackFactory属性中的降级类需要实现FallbackFactory接口。
+- fallbackFactory属性在某些情况下更加灵活，可以在创建降级类实例时进行参数传递和自定义逻辑处理。而fallback属性比较简单，只需要提供一个降级类即可。
+- fallbackFactory属性可以通过Throwable参数获取调用失败的异常信息，而fallback属性无法获取异常信息。
+
+<p>综上所述，fallback属性适用于简单的服务降级处理，而fallbackFactory属性适用于复杂的场景，如需要根据不同的异常类型返回不同的默认值或进行其他定制化处理。</p>
+
+
 # 四、断路器
 ## 1、工作机制
 ### ①三种状态
@@ -545,12 +584,12 @@ public interface PaymentHystrixService {
 |参数名|参数含义|
 |---|---|
 |circuitBreaker.enabled|打开断路器功能|
-|circuitBreaker.requestVolumeThreshold|在一个限定时间内，请求的总数量阈值|
-|circuitBreaker.errorThresholdPercentage|在限定时间内，请求失败比例阈值|
+|circuitBreaker.requestVolumeThreshold|请求的总数量阈值（从进入关闭状态开始统计）|
+|circuitBreaker.errorThresholdPercentage|请求失败比例阈值（从进入关闭状态开始统计）|
 |circuitBreaker.sleepWindowInMilliseconds|从全开到半开的时间间隔|
 
 ### ③断路器打开的条件
-『请求总数量阈值』和『请求失败比例阈值』二者都达到了要求才能够打开断路器。这就体现出框架对于断路器的打开是非常慎重的。
+从进入关闭状态开始统计，『请求总数量阈值』和『请求失败比例阈值』二者都达到了要求才能够打开断路器。这就体现出框架对于断路器的打开是非常慎重的。
 
 ## 2、设置举例
 ### ①Service方法
@@ -666,6 +705,8 @@ public class HystrixDashboardMain9001 {
 ```
 
 ## 4、指定监控路径
+**注意**：在被监控的微服务中添加下面的配置！<br/>
+
 ```java
 package com.atguigu.springcloud.config;  
   
@@ -678,7 +719,7 @@ import org.springframework.context.annotation.Bean;
 public class ServletRegisterConfig {  
   
     /**  
-     *此配置是为了服务监控而配置，与服务容错本身无关，springcloud升级后的坑  
+     *此配置要在被监控的服务中添加，与服务容错本身无关，springcloud升级后的坑  
      *ServletRegistrationBean因为springboot的默认路径不是"/hystrix.stream"，  
      *只要在自己的项目里配置上下面的servlet就可以了  
      */  
@@ -796,3 +837,74 @@ hystrix:
 Load balancer does not have available server for client
 
 看到这样的错误，如果确信配置方面没有错，那么大部分情况是服务刚启动，在注册中心还没有注册好，等一会儿就行了。
+
+<br/>
+
+
+# 七、总结
+## 1、要解决的问题
+服务雪崩。解决的思路：
+- 熔断：通过断路器来实现。
+- 降级：通过备选方案来实现。
+
+## 2、技术实现
+### ①服务降级
+#### [1]概念
+站在用户体验的角度，正常情况应该是能够返回用户预期的结果。<br/>
+最差的情况是应用程序故障并且把报错信息显示到了页面上。<br/>
+二者折中的处理方案就是给一个相对比较友好的错误提示——这个结果相对于用户预期的结果体验是有所下降的，所以叫服务降级。
+
+#### [2]当前微服务被调用场景
+主要是@HystrixCommand的使用：
+- fallbackMethod属性：当前方法出现问题的时候，去调用的备选方法（当前方法专属的）
+- commandProperties属性：专门设置Hystrix相关属性，开发人员指定属性名和属性值
+	- execution.isolation.thread.timeoutInMilliseconds属性：指定Hystrix超时时间，超过这个时间会触发降级
+- defaultFallback属性：指定默认的备选方案方法，在当前类范围内生效。
+	- 类中的每个业务方法都可以使用这个方法作为备选方案
+	- 由于每个业务方法参数列表都不保证一样，所以通用的备选方法必须是无参的
+
+#### [3]当前微服务调用服务提供者场景
+当前微服务调用服务提供者底层需要使用：
+- RestTemplate
+- Ribbon
+- Hystrix
+<p>为了简化开发，SpringCloud框架就把上面组件操作的细节封装到了OpenFeign组件中。所以此时服务降级就是在OpenFeign组件中实现。</p>
+<p>开发中常用的方式：</p>
+- 声明一个类，实现Feign接口（标记@FeignClient注解的接口）。
+- 实现Feign接口的类加入IOC容器。
+- 在@FeignClient注解中使用fallBack属性指定实现Feign接口的类作为统一的降级方案。
+
+#### [4]备选方案方法
+我们对备选方案的方法的要求是：返回值必须是原本的业务方法返回值类型一致。<br/>
+假设：原本调用业务方法预期返回String类，但是因为服务降级返回的是Integer类型，就会发生类型转换错误。<br/>
+所以此时就体现出微服务调用过程中返回统一的类型的重要性。比如我们使用的：CommonResult&lt;T&gt;。
+
+#### [5]触发降级的条件
+对于标记了@HystrixCommand注解的方法：
+- 方法内超时：代码执行已经进入方法内了，但是方法执行过程中超时了。
+- 方法内抛异常：代码执行已经进入方法内了，但是方法执行过程中抛异常了。
+- 方法外等待超时：受并发能力的限制，处理当前请求的线程超过并发能力只能在方法外等待其它线程执行完成才能调用业务方法。
+
+
+### ②断路器
+#### [1]功能
+![img.png](images/img258.png)
+
+- 断路器关闭状态：调用者可以正常调用业务方法
+- 断路器全开状态：调用者在一定时间内无法调用业务方法，采用降级的备选方案
+- 断路器半开状态：调用者在等待指定时间后，放一个请求去调用业务方法
+	- 成功：断路器回到关闭状态
+	- 失败：断路器回到全开状态
+
+#### [2]配置
+在@HystrixCommand注解中，通过commandProperties属性来设置：
+
+<br/>
+
+|参数名|参数含义|
+|---|---|
+|circuitBreaker.enabled|打开断路器功能|
+|circuitBreaker.requestVolumeThreshold|请求的总数量阈值（从进入关闭状态开始统计）|
+|circuitBreaker.errorThresholdPercentage|请求失败比例阈值（从进入关闭状态开始统计）|
+|circuitBreaker.sleepWindowInMilliseconds|从全开到半开的时间间隔|
+

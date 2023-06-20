@@ -4,6 +4,10 @@
 - 已匹配的请求经过网关的『**路由**』进入对应的微服务
 - 如有需要，网关还可以对请求进行『**过滤**』
 
+<br/>
+
+![img.png](images/img259.png)
+
 # 二、搭建测试环境
 ## 1、引入依赖
 ```xml
@@ -61,6 +65,7 @@ public class GateWayMain9527 {
 # 三、配置网关路由
 ## 1、概述
 <p>网关接收到请求先使用断言（predicate）进行匹配，如果匹配成功则执行配套的路由规则。</p>
+
 断言匹配方式非常多，我们常用下面两种方式：
 - 路径匹配
 - 主机匹配
@@ -305,7 +310,8 @@ public class MyFilter implements GlobalFilter {
      *  
      * @param exchange  
      * @return  
-     */    private Mono<Void> synchronizeRequestRefuse(ServerWebExchange exchange) {  
+     */    
+     private Mono<Void> synchronizeRequestRefuse(ServerWebExchange exchange) {  
   
         // 1、获取 Response 对象    
 		ServerHttpResponse response = exchange.getResponse();  
@@ -328,7 +334,8 @@ public class MyFilter implements GlobalFilter {
      *  
      * @param exchange  
      * @return  
-     */    private Mono<Void> aSynchronizeRequestRefuse(ServerWebExchange exchange) {  
+     */    
+     private Mono<Void> aSynchronizeRequestRefuse(ServerWebExchange exchange) {  
   
         // 1、创建 Map 对象封装数据    
 		Map<String, String> map = new HashMap<>();  
@@ -354,3 +361,8 @@ public class MyFilter implements GlobalFilter {
     }  
 }
 ```
+
+## 5、网关是否能被绕开？
+网关一旦被绕过，前端请求直接访问被过滤逻辑保护的微服务，那么网关过滤就无效了。<br/>
+那么网关是否能被绕过呢？<br/>
+如果网关对外暴露公网IP，而后面微服务都在内网——只能通过网关路由进来，不能直接访问，那么网关就绕不过去了。
