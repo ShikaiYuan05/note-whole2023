@@ -8,6 +8,38 @@
 
 ![img.png](images/img259.png)
 
+<br/>
+
+![img.png](images/img260.png)
+
+<br/>
+
+路径匹配语法含义：<br/>
+
+![img.png](images/img261.png)
+
+<br/>
+
+主机匹配语法含义：<br/>
+
+![img.png](images/img262.png)
+
+<br/>
+
+静态路由：
+
+<br/>
+
+![img.png](images/img263.png)
+
+<br/>
+
+动态路由：
+
+<br/>
+
+![img.png](images/img264.png)
+
 # 二、搭建测试环境
 ## 1、引入依赖
 ```xml
@@ -80,6 +112,7 @@ public class GateWayMain9527 {
 - **注意**：Path是首字母大写
 - **注意**：Path和值之间是等号
 - **注意**：多个路由规则之间，Path的值不能重复
+
 ```yaml
 spring:  
   application:  
@@ -190,6 +223,12 @@ public class MyAuthFilter implements GlobalFilter {
 ### ①为什么要区别对待
 - 同步请求：点击超链接->后端程序->渲染视图->返回给浏览器是一个**完整的HTML页面**
 - 异步请求：点击按钮->触发单击响应函数->发送Ajax请求->后端程序->返回**JSON格式响应数据**
+
+<br/>
+
+> 你（相当于统一处理请求的组件）给家里宠物买口粮。<br/>
+> 老虎：需要肉（就好比服务器端渲染时需要完整HTML页面）<br/>
+> 兔子：需要菜（就好比前渲染时需要JSON数据）
 
 ### ②为什么要放在过滤器这里说
 因为创建过滤器、拦截器都是面对很多请求做统一处理。这些请求中就很可能有的是同步、有的是异步。<br/>
