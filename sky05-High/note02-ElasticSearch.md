@@ -14,9 +14,9 @@
 - 站内搜索：京东、QQ音乐
 
 ## 2、搜索如何实现
-- 不使用索引：逐行检查原始数据是否满足查询条件，性能极差
+- **不使用索引**：逐行检查原始数据是否满足查询条件，性能极差
     - 查字典：到字典正文一页一页翻，查找想要找的字
-- 使用索引：先通过索引找到数据位置，精准定位后直接返回数据，性能提升非常大
+- **使用索引**：先通过索引找到数据位置，精准定位后直接返回数据，性能提升非常大
     - 查字典：先到检字表中找到这个字以及这个字对应的页码，然后直接翻到这一页
 
 ## 3、倒排索引
@@ -27,6 +27,7 @@
 
 ### ②举例
 #### [1]原始数据分词
+
 |文档 ID|文档内容|
 |-|-|
 |1|谷歌地图之父跳槽Facebook|
@@ -46,6 +47,7 @@
 |5|[谷歌] [地图] [之父] [拉斯] [加盟] [社交] [网站] [Facebook]|
 
 #### [2]建立索引
+
 |单词 ID|单词|关联文档的 ID|
 |-|-|-|
 |1|谷歌|1 2 3 4 5|
@@ -122,7 +124,7 @@
 
 <br/>
 
-解决办法是：修改ElasticSearch解压目录/config/jvm.options文件。
+解决办法是：修改ElasticSearch解压目录/config/jvm.options文件。<br/>
 把下面的配置项改为512M：
 
 <br/>
@@ -160,6 +162,8 @@ i18n.locale: "zh-CN"
 ![images](./images/img26.jpg)
 
 ## 5、安装 IK 中文分词器
+ElasticSearch本身不支持中文分词，所以需要我们另外安装中文分词器。而IK Analyzer是目前中文分词器中最好的一个。<br/>
+
 ### ①下载地址
 > https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.8.0/elasticsearch-analysis-ik-7.8.0.zip
 
@@ -188,7 +192,7 @@ POST _analyze
 }
 ```
 
-# 四、ElasticSearch 核心概念
+# 四、ElasticSearch 数据结构
 
 |ElasticSearch|MySQL|
 |-|-|
@@ -202,9 +206,22 @@ POST _analyze
 
 > ElasticSearch较高的版本已经废除了type这个概念。
 
+<br/>
+
+如果不考虑type：
+
+|ElasticSearch|MySQL|
+|-|-|
+|index|表|
+|mapping|表结构|
+|document|记录/行|
+|field|字段/列|
+
+<br/>
+
 ElasticSearch 中字符串有两种类型：
-- text：分词，不能用来排序和聚合
-- keyword：不分词，可以被用来检索过滤、排序和聚合
+- text：原始数据分词，不能用来排序和聚合
+- keyword：原始数据不分词，可以被用来检索过滤、排序和聚合
 
 # 五、ElasticSearch 基本操作
 ## 1、index 相关操作
@@ -379,7 +396,7 @@ PUT /索引名称
             "字段名":{
                 "type":"当前字段的数据类型",
                 "index":布尔值，表示是否为当前字段建立索引,
-                "store":布尔值，表示当前字段是否存储,
+                "store":布尔值，表示当前字段是否做额外存储,
                 "analyzer":"当前字段使用的分词器名称",
                 "search_analyzer":"搜索关键词使用的分词器"
             },
@@ -453,6 +470,14 @@ PUT /index_song
 <br/>
 
 # 六、DSL高级查询
+<p>在ElasticSearch中，DSL代表Domain Specific Language（领域特定语言），用于构建丰富的查询和聚合操作。DSL是ElasticSearch提供的一种结构化查询语言，它允许用户以更直观和灵活的方式定义搜索条件和聚合操作。</p>
+
+<br/>
+
+<p>DSL查询可以按照各种条件进行过滤、排序和分页。它支持诸如匹配、范围查询、布尔逻辑、正则表达式等高级查询操作。同时，DSL还可以通过聚合操作对结果进行分组、计数、求和、平均值等统计分析。</p>
+
+<br/>
+
 ## 1、测试数据
 ```text
 POST db_song/_doc
@@ -881,7 +906,7 @@ GET /db_hr/_search
 }
 ```
 
-### ⑥其它聚合方式
+### ⑥对分组结果进行统计
 - max：组内取最大值
 - min：组内取最小值
 - avg：组内取平均值
