@@ -214,6 +214,8 @@ Query Per Second：每秒请求数量。
 	- 发生异常的请求的比例达到阈值
 - 异常数阈值：在统计时间内异常数量达到阈值，触发熔断
 
+<br/>
+
 熔断状态：
 - 关闭：没有熔断，可以正常请求的状态
 - 全开：执行了熔断，所有请求都不能执行，会持续一段时间
@@ -247,6 +249,14 @@ Query Per Second：每秒请求数量。
 
 <br/>
 
+我们设定的单机阈值是针对某个参数值，这个参数值在统计时间内，出现的次数达到这里设定的阈值，就会触发流控。
+
+<br/>
+
+统计窗口时长设置的是每一个统计周期的时间长度。在每一个统计周期内，是重新开始统计的。
+
+<br/>
+
 ![images](./images/img204.png)
 <br/>
 
@@ -257,6 +267,22 @@ Query Per Second：每秒请求数量。
     <artifactId>sentinel-parameter-flow-control</artifactId> 
 </dependency>
 ```
+
+**注意**：在业务方法上一定要通过@SentinelResource注解指定规则中资源名称
+```java
+@GetMapping("/testC")  
+@SentinelResource(  
+        // 一定要通过 value 属性指定 Sentinel 中规则里面设置的资源名  
+        value = "/testC")  
+public String testC(String param) {  
+    return "----------testC param="+param;  
+}
+```
+
+<br/>
+
+热点Key规则生效后，会抛出异常：异常后面是超出阈值的参数
+> com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowException: aaa
 
 
 ## 4、系统规则
@@ -284,6 +310,26 @@ value属性用来指定Sentinel配置的规则中资源名称。要求和资源�
 
 如果希望把降级方法抽取到另外的一个类中，则需要再设定fallbackClass属性。此时对降级方法有一个额外要求：使用public static声明。其它方面要求还是和上面一致。
 
+<br/>
+
+```java
+@GetMapping("/testA")  
+@SentinelResource(  
+        // value 属性指定 Sentinel 中配置的规则名称，要求完全一样  
+        value = "/testA",  
+  
+        // fallback 属性指定一个降级方法，在触发流控规则时执行（倾向于对微服务保护的规则）  
+        fallback = "testA_fallback"  
+)  
+public String testA() {  
+    return "----------testA";  
+}  
+  
+public String testA_fallback() {  
+    return "----------testA testA_fallback";  
+}
+```
+
 ### ③关于违背规则的降级配置
 通过blockHandler属性指定降级方法，如果没有配合blockHandlerClass，那么要求降级方法必须在当前类中。细节要求：
 - 返回值类型必须和原业务方法返回值类型一致，因为降级方法被调用后返回值会代替原业务方法返回值返回给调用者，这样就能保证返回给调用者的是相同的类型
@@ -291,8 +337,32 @@ value属性用来指定Sentinel配置的规则中资源名称。要求和资源�
 
 如果希望把降级方法抽取到另外一个类中，则需要再设定blockHandlerClass属性。此时对降级方法有一个额外要求：使用public static声明。其它方面要求还是和上面一致。
 
+<br/>
+
+```java
+@GetMapping("/testB")  
+@SentinelResource(  
+        value = "/testB",  
+  
+        // blockHandler 属性指定一个降级方法，在触发熔断规则时执行（倾向于微服务内部故障的规则）  
+        blockHandler = "testB_blockHandler"  
+)  
+public String testB() {  
+    throw new RuntimeException("atguigu my exception");  
+}  
+  
+public String testB_blockHandler(BlockException blockException) {  
+    return "----------testB testB_blockHandler blockException=" + blockException;  
+}
+```
+
 ### ④exceptionsToIgnore属性
 指定要忽略的异常类型，忽略之后将不会触发fallback降级。
+
+### ⑤注意
+如果fallback和blockHandler属性都指定了降级方法，那么：
+- 未触发熔断规则时执行fallback属性指定的降级方法
+- 触发熔断规则时执行blockHandler属性指定的降级方法
 
 # 四、规则持久化
 ## 1、要解决的问题
@@ -300,7 +370,8 @@ value属性用来指定Sentinel配置的规则中资源名称。要求和资源�
 
 ## 2、操作方式
 ### ①确认依赖
-要求业务的微服务中存在下面依赖：
+要求业务的微服务中存在下面依赖：<br/>
+
 ```xml
 <dependency>  
     <groupId>com.alibaba.csp</groupId>  
