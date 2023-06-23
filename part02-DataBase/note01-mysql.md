@@ -702,11 +702,250 @@ select id, emp_name, emp_salary from t_emp where id=3;
 
 <br/>
 
+### ①算术运算符
+
+|符号|说明|
+|---|---|
+|+|在MySQL中，加号就是求和，没有字符串拼接的功能|
+|-|做减法|
+|\*|做乘法|
+|/|做除法|
+|div|做除法，但只保留商的整数部分|
+|%|取模|
+|mod|取模|
+
+<br/>
+
+**注意**：MySQL中没有+=这样的写法。
+
+### ②比较运算符
+
+|符号|说明|
+|---|---|
+|&gt;|大于|
+|&lt;|小于|
+|&gt;=|大于或等于|
+|&lt;=|小于或等于|
+|=|等于|
+|!=|不等于|
+|&lt;&gt;|不等于|
+
+<br/>
+**注意**：=是做是否相等的判断，不是赋值。<br/>
+**注意**：不能写 xxx = null，此时要写 xxx is null<br/>
+**注意**：!=或&lt;&gt;也不能用于对null值进行判断，而是要写成 xxx is not null<br/>
+
+### ③区间或集合范围比较运算符
+- 查询在区间范围的记录：between x and y
+- 查询不在区间范围的记录：not between x and y
+- 查询在集合范围的记录：in (x,y,z)
+- 查询不在集合范围的记录：not in (x,y,z)
+
+### ④模糊匹配比较运算符
+
+|符号|说明|
+|---|---|
+|%|表示这里可以匹配任意数量的任意字符|
+|\_|每一个下划线匹配一个任意字符|
+
+### ⑤逻辑运算符
+
+|符号|说明|
+|---|---|
+|&&|逻辑与|
+|and|逻辑与|
+|\|\||逻辑或|
+|or|逻辑或|
+|!|逻辑非|
+|xor|逻辑异或|
+
+### ⑥关于null值
+#### [1]null值的判断
+```sql
+xxx is null;
+xxx is not null;
+xxx <=> null;
+```
+
+#### [2]null值的计算
+调用ifnull()函数，在某条记录中某个字段值为null时，使用替代值来计算：
+```sql
+ifnull(xxx,替代值)
+```
+
+
 # 四、SQL进阶语法
 
 <br/>
 
 ## 1、关联查询
+
+<br/>
+
+### ①概念
+当A表通过某个字段关联到B表时，我们说A表和B表之间建立了关联关系。<br/><br/>
+
+当我们根据表之间的关联关系，在查询中涉及多张表时，就是关联查询。<br/><br/>
+
+比如：员工表通过部门编号关联部门表。<br/><br/>
+
+关联字段需要满足以下条件：
+- 逻辑意义一样
+- 数据类型一样
+
+<br/>
+
+以下两方面不要求：
+- 字段名不要求一样
+- 创建外键约束不要求
+
+### ②关联查询的各种情况
+![img.png](images/note01-mysql/img0063.png)
+
+<br/>
+
+### ③关联查询的语法要求
+联合查询必须写关联条件，关联条件的个数 = n - 1。n是联合查询的表的数量。<br/>
+- 如果2个表一起联合查询，关联条件数量是1， 
+- 如果3个表一起联合查询，关联条件数量是2， 
+- 如果4个表一起联合查询，关联条件数量是3， 
+- 以此类推。。。。 
+如果不指定连接条件，就会出现笛卡尔积现象，这是应该避免的。<br/>
+所谓笛卡尔积就A表中每条记录都关联B表中的每条记录，既不符合逻辑，又会导致查询结果数据量暴增。<br/><br/>
+
+关联条件可以用on子句编写，也可以写到where中。<br/>
+但是建议用on单独编写，可读性更好。<br/>
+每一个join后面都要加on子句：
+- A inner|left|right join B on 条件
+- A inner|left|right join B on 条件 inner|left|right jon C on 条件
+
+### ④SQL实现
+#### [1]内连接
+- 语法：A表 inner join B表 on 连接条件
+- 执行结果：A表 ∩ B表
+
+<br/>
+
+![img.png](images/note01-mysql/img0064.png)
+
+<br/>
+
+#### [2]左外连接
+- 语法：A表 left join B表 on 连接条件
+- 执行结果：
+	- A表全部
+	- A表 - A∩B
+
+<br/>
+
+![img.png](images/note01-mysql/img0065.png)
+
+<br/>
+
+![img.png](images/note01-mysql/img0066.png)
+<br/>
+
+#### [3]右外连接
+- 语法：A表 right join B表 on 连接条件
+- 执行结果：
+	- B表全部
+	- B表 - A∩B
+
+<br/>
+
+![img.png](images/note01-mysql/img0067.png)
+
+<br/>
+
+![img.png](images/note01-mysql/img0068.png)
+
+<br/>
+
+#### [4]全外连接
+- 语法：full outer join ... on，但是MySQL不支持这个关键字，MySQL使用union（合并）结果的方式代替
+- 执行结果：A表 ∪ B表
+- MySQL替代方案：A表查询语句 union B表查询语句
+
+<br/>
+
+union的语法细节：
+- 参与union的查询语句，输出的字段必须是一样的
+- UNION ALL合并不去重
+- UNION合并且去重
+
+<br/>
+
+![img.png](images/note01-mysql/img0069.png)
+
+<br/>
+
+```sql
+#查询所有员工和所有部门，包括没有指定部门的员工和没有分配员工的部门。 
+SELECT * FROM t_employee LEFT JOIN t_department 
+ON t_employee.did = t_department.did
+
+UNION 
+
+SELECT * FROM t_employee RIGHT JOIN t_department 
+ON t_employee.did = t_department.did;
+```
+
+<br/>
+
+![img.png](images/note01-mysql/img0070.png)
+
+<br/>
+
+```sql
+#查询那些没有分配部门的员工和没有指定员工的部门，即A表和B表在对方那里找不到对应记录的数据。
+SELECT *
+FROM t_employee LEFT JOIN t_department
+ON t_employee.did = t_department.did
+WHERE t_employee.did IS NULL
+
+UNION 
+
+SELECT *
+FROM t_employee RIGHT JOIN t_department
+ON t_employee.did = t_department.did
+WHERE t_employee.did IS NULL;
+```
+
+<br/>
+
+#### [5]自连接
+一张表自己和自己关联，物理上来说是同一张表，逻辑上当作两张表来写SQL。
+```sql
+/*
+分析表结构：t_employee表
+mid：是表示存储员工的领导编号。即该员工归谁管。领导编号其实就是“领导”作为员工身份的员工编号
+   例如：eid为3的员工邓超远，他的mid是7，表示他的领导是员工编号为7的员工。
+   eid为7的员工是贾宝玉，他的eid是7，贾宝玉作为员工来说，他的编号是7。
+
+mid的取值范围受到eid字段的限制。mid的值选择必须是eid现有值范围。
+
+可以理解为mid和eid是关联字段，如果要建外键，可以在mid字段上建外键。
+foreign key(mid) references t_employee(eid)   
+
+此时t_employee既是子表也是父表。
+员工表t_employee建立了外键：
+CONSTRAINT `t_employee_ibfk_3` FOREIGN KEY (`mid`) REFERENCES `t_employee` (`eid`) ON DELETE SET NULL ON UPDATE CASCADE
+*/
+
+#查询每一个员工自己的编号、名字、薪资和他的领导的编号、姓名、薪资。
+#把t_employee当成两张表，通过取别名的方式
+#t_employee AS emp 把员工表 当成员工表
+# t_employee AS mgr 把员工表  当成存储领导信息的领导表
+#emp.mid = mgr.eid; 员工表的领导编号就是领导表的员工编号
+SELECT emp.eid,emp.ename,emp.salary,  mgr.eid,mgr.ename,mgr.salary
+FROM t_employee AS emp INNER JOIN t_employee AS mgr
+ON emp.mid = mgr.eid;
+```
+
+<br/>
+
+#### [6]小结
+![img.png](images/note01-mysql/img0071.png)
 
 <br/>
 
