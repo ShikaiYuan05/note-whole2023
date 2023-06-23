@@ -693,7 +693,7 @@ select id, emp_name, emp_salary from t_emp where id=3;
 
 <br/>
 
-> 实际开发中不要采用select *的写法，因为这样不知道具体查询了哪些字段。<br/>
+> 实际开发中不要采用select \*的写法，因为这样不知道具体查询了哪些字段。<br/>
 > 时间一长，别说别人，自己都不记得。
 
 <br/>
