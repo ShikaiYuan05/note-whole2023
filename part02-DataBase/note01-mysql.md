@@ -778,7 +778,20 @@ ifnull(xxx,替代值)
 
 <br/>
 
-## 1、关联查询
+## 1、SQL查询语句的各子句
+- (1)select
+- (2)from：从哪些表中筛选
+- (3)inner|left|right ...  on：关联多表查询时，去除笛卡尔积
+- (4)where：从表中筛选的条件
+- (5)group by：分组依据
+- (6)having：在分组统计结果中再次筛选（with rollup)
+- (7)order by：排序
+- (8)limit：分页
+
+必须按照从(1)到(8)的顺序编写各子句。
+
+
+## 2、关联查询
 
 <br/>
 
@@ -827,6 +840,10 @@ ifnull(xxx,替代值)
 <br/>
 
 ![img.png](images/note01-mysql/img0064.png)
+
+<br/>
+
+如果遇到：“Column 'did' in field list is ambiguous”的错误提示，就是说两张表的同名字段必须加别名。
 
 <br/>
 
@@ -949,23 +966,142 @@ ON emp.mid = mgr.eid;
 
 <br/>
 
-## 2、分组与聚合查询
+## 3、分组与聚合查询
 
 <br/>
 
-## 3、子查询
+### ①分组的概念
+根据某个（或某几个）字段的值，把查询结果分组，指定字段的值相同的划分到同一组。<br/>
+例如：根据部门id分组<br/>
+
+![img.png](images/note01-mysql/img0072.png)
 
 <br/>
 
-## 4、排序
+### ②聚合的概念
+分组之后，一个组内很可能包含很多条数据，而最终的查询结果中，一个组只生成一条记录。<br/>
+所以问题来了，组内多条记录怎么压缩成一条？<br/>
+两个办法：
+- 情况一：某个字段在组内所有记录中的值都是一样的，那就可以直接用。
+- 情况二：使用聚合函数。
 
 <br/>
 
-## 5、分页
+### ③练习案例一
+目标：查询各部门员工的平均工资。<br/>
+
+```sql
+select avg(emp_salary), dept_id from t_emp group by dept_id;
+```
 
 <br/>
 
-## 6、系统函数
+### ④练习案例二
+目标：得到各部门平均工资之后显示合计数值
+```sql
+select avg(emp_salary), dept_id from t_emp group by dept_id with rollup ;
+```
+
+<br/>
+
+### ⑤练习案例三
+目标：先按照部门分组，在部门分组结果内再按照专业分组
+```sql
+select avg(emp_salary), emp_subject, dept_id  
+from t_emp  
+group by dept_id, emp_subject;
+```
+
+### ⑥练习案例四
+目标：查询各部门平均工资，要求显示部门名称。
+```sql
+select avg(emp_salary), d.dept_id, dept_name  
+from t_emp e  
+         left join t_dept d on e.dept_id = d.dept_id  
+group by dept_id;
+```
+
+### ⑦练习案例五
+关于分组、聚合操作时涉及的查询条件，原则是：能在分组、聚合操作前执行的查询条件就在操作前执行。因为查询条件把不满足条件的数据过滤掉之后，分组、聚合操作运算量更小，效率更高。
+- 分组、聚合操作前执行的查询条件：where子句
+- 分组、聚合操作后执行的查询条件：having子句
+```sql
+# 分组、聚合操作前过滤数据：针对所有女员工数据根据部门 id 分组  
+select avg(emp_salary), dept_id, emp_gender  
+from t_emp  
+where emp_gender = 'female'  
+group by dept_id;  
+  
+# 分组、聚合操作后过滤数据：显示平均工资大于4000的聚合结果  
+select avg(emp_salary) emp_avg_salary, dept_id  
+from t_emp  
+group by dept_id  
+having emp_avg_salary > 4000;
+```
+
+## 4、子查询
+
+<br/>
+
+### ①概念
+嵌套在另一个SQL语句中的查询。select、update、delete、insert、create等语句都可以嵌套子查询。
+
+<br/>
+
+### ②select嵌套子查询
+
+<br/>
+
+```sql
+select emp_id,   
+       emp_name,   
+       emp_salary,   
+       emp_salary - (select avg(emp_salary) from t_emp) difference  
+from t_emp;
+```
+
+<br/>
+
+### ③where嵌套子查询
+where子句中嵌入子查询肯定是
+
+<br/>
+
+<br/>
+
+### ④having嵌套子查询
+
+<br/>
+
+### ⑤EXISTS型子查询
+
+<br/>
+
+### ⑥from嵌套子查询
+
+<br/>
+
+### ⑦update嵌套子查询
+
+<br/>
+
+### ⑧delete嵌套子查询
+
+<br/>
+
+### ⑨使用子查询复制表
+
+<br/>
+
+## 5、排序
+
+<br/>
+
+## 6、分页
+
+<br/>
+
+## 7、系统函数
 
 <br/>
 

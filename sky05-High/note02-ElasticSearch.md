@@ -1061,6 +1061,14 @@ GET /db_hr/_search
 
 <br/>
 
+ElasticSearch的Java客户端：
+- 原生API：使用HttpClient
+- Low Level client
+- High Level client：拼接、生成DSL语句执行搜索操作，解析返回结果
+- SpringData整合：常规增删改查操作
+
+<br/>
+
 ## 1、搭建环境
 ### ①Maven 配置 POM
 #### [1]父工程
@@ -1076,19 +1084,19 @@ GET /db_hr/_search
 #### [2]依赖
 ```xml
 <dependencies>
-    <!--elasticsearch的高级别rest客户端-->
+    <!--elasticsearch的高级别rest客户端：封装了我们要使用的API-->
     <dependency>
         <groupId>org.elasticsearch.client</groupId>
         <artifactId>elasticsearch-rest-high-level-client</artifactId>
         <version>7.8.0</version>
     </dependency>
-    <!--elasticsearch的rest客户端-->
+    <!--elasticsearch的rest客户端：负责和ElasticSearch服务器通信-->
     <dependency>
         <groupId>org.elasticsearch.client</groupId>
         <artifactId>elasticsearch-rest-client</artifactId>
         <version>7.8.0</version>
     </dependency>
-    <!--elasticsearch的核心jar包-->
+    <!--elasticsearch的核心jar包：完成核心计算-->
     <dependency>
         <groupId>org.elasticsearch</groupId>
         <artifactId>elasticsearch</artifactId>
@@ -1152,7 +1160,7 @@ GET /db_hr/_search
 
 ### ②SpringBoot
 #### [1]配置文件
-application.properties
+application.properties中和ElasticSearch相关的配置如下：
 ```properties
 elasticsearch.host=localhost
 elasticsearch.port=9200
@@ -1162,6 +1170,7 @@ elasticsearch.port=9200
 不需要加额外注解，就是一个普通的主启动类
 
 #### [3]配置类
+目的是创建RestHighLevelClient对象并放入IOC容器：
 ```java
 package com.atguigu.es.config;
 
