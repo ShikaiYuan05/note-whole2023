@@ -1,6 +1,7 @@
 > 课件地址：https://www.wolai.com/hbmnycbejmS4cZkqSJKRF1<br/>
-> 笔记地址：[note02-ElasticSearch.md · 封捷/note-frame-high-level - 码云 - 开源中国 (gitee.com)](https://gitee.com/heavy_code_industry/note-frame-high-level/blob/master/note02-ElasticSearch.md)<br/>
-> 代码地址：[封捷/atguigu-project-new-221126 (gitee.com)](https://gitee.com/heavy_code_industry/atguigu-project-new-221126)
+> 笔记地址：[note02-ElasticSearch.md · 封捷/note-frame-high-level - 码云 - 开源中国 (gitee.com)](https://gitee.com/heavy_code_industry/note-whole2023/blob/master/sky05-High/note02-ElasticSearch.md)<br/>
+> 代码地址：[封捷/atguigu-project-new-221126 (gitee.com)](https://gitee.com/heavy_code_industry/location230301)<br/>
+> 思维导图：http://naotu.baidu.com/file/5d957235090fbff6df43ecfde910f671?token=9f7c9688351d8fbf
 
 <br/>
 
